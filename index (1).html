@@ -1,0 +1,2509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ploriv Browser</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg: #0c0a09;
+            --surface: #1c1410;
+            --surface-2: #2a1c14;
+            --border: rgba(251, 146, 60, 0.18);
+            --text: #fef3e8;
+            --muted: #c4a484;
+            --accent: #fb923c;
+            --accent-soft: rgba(251, 146, 60, 0.18);
+            --green: #86efac;
+            --fire: #f97316;
+            --flame: #ef4444;
+            --page: #120e0b;
+            --page-text: #fef3e8;
+            --page-muted: #c4a484;
+            --heading: #fdba74;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', 'Segoe UI', system-ui, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            background: var(--bg);
+            color: var(--text);
+            letter-spacing: -0.01em;
+        }
+        ::-webkit-scrollbar { width: 0; height: 0; }
+        .glow-effect { box-shadow: 0 0 40px -5px rgba(249, 115, 22, 0.4); }
+        .glow-accent { box-shadow: 0 0 40px -5px rgba(251, 146, 60, 0.45); }
+        .glow-purple { box-shadow: 0 0 40px -5px rgba(239, 68, 68, 0.35); }
+        .glass-panel {
+            background: rgba(28, 20, 16, 0.88);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+        }
+        button, input, select, textarea { transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1); }
+        .tab-chip {
+            border-radius: 8px 8px 0 0;
+            border: 1px solid transparent;
+            border-bottom: none;
+        }
+        .tab-chip.active {
+            background: var(--bg);
+            border-color: var(--border);
+            color: var(--text);
+        }
+        .tab-chip:not(.active) { background: transparent; color: var(--muted); }
+        .tab-chip:not(.active):hover { background: rgba(255,255,255,0.06); color: #d2d2d7; }
+        .omnibox:focus-within {
+            border-color: rgba(251, 146, 60, 0.5) !important;
+            box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.15);
+        }
+        .heading-sky {
+            color: var(--heading);
+        }
+        .text-soft-green {
+            color: var(--green);
+        }
+        .shine-title {
+            background: linear-gradient(105deg, #ea580c 0%, #fb923c 30%, #fdba74 50%, #f97316 70%, #ef4444 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shine-shift 5s ease-in-out infinite;
+        }
+        @keyframes shine-shift {
+            0%, 100% { background-position: 0% center; }
+            50% { background-position: 100% center; }
+        }
+        .ploriv-logo {
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+            background: linear-gradient(145deg, #ef4444, #f97316 40%, #fdba74);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 15px;
+            color: #1c0a00;
+            box-shadow: 0 0 24px rgba(249, 115, 22, 0.4);
+            letter-spacing: -0.02em;
+        }
+        .shortcut-tile {
+            width: 72px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            color: var(--muted);
+            transition: color 0.15s, transform 0.15s;
+        }
+        .shortcut-tile:hover { color: var(--text); transform: translateY(-2px); }
+        .shortcut-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+        }
+        .apple-hero-title {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 600;
+            letter-spacing: -0.035em;
+            line-height: 1.05;
+        }
+        .apple-sub {
+            font-size: clamp(1.1rem, 2.2vw, 1.35rem);
+            font-weight: 400;
+            letter-spacing: -0.01em;
+            line-height: 1.4;
+            color: var(--muted);
+        }
+        .velox-overview {
+            background: transparent;
+            color: var(--page-text);
+        }
+        .velox-card {
+            background: var(--surface);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+        }
+        .velox-rich b, .velox-rich strong { font-weight: 700; color: #fff; }
+        .velox-rich i, .velox-rich em { font-style: italic; }
+        .velox-rich u { text-decoration: underline; }
+        .velox-rich p { margin-bottom: 0.85em; }
+        .velox-rich font[size="2"] { font-size: 0.9em; }
+        .velox-rich font[size="3"] { font-size: 1em; }
+        .velox-rich font[size="4"] { font-size: 1.15em; }
+        .velox-rich font[size="5"] { font-size: 1.35em; }
+        .velox-rich font[size="6"] { font-size: 1.55em; }
+        #velox-body-editor:empty:before {
+            content: attr(data-placeholder);
+            color: #64748b;
+            pointer-events: none;
+        }
+    </style>
+
+    <script>
+        function logConsole(msg) {
+            const logs = document.getElementById('console-logs');
+            if (logs) {
+                logs.innerHTML += `<div class="text-slate-300">[${new Date().toLocaleTimeString()}]: ${msg}</div>`;
+                logs.scrollTop = logs.scrollHeight;
+            } else {
+                console.log(msg);
+            }
+        }
+    </script>
+
+    <script type="module">
+        // Offline / local stubs so the browser always loads even if Firebase fails
+        window.currentUser = window.currentUser || null;
+        window.fbSignUp = window.fbSignUp || (async () => ({ success: false, error: 'Cloud not ready. Try again or host on HTTPS.' }));
+        window.fbSignIn = window.fbSignIn || (async () => ({ success: false, error: 'Cloud not ready. Try again or host on HTTPS.' }));
+        window.fbSignOut = window.fbSignOut || (async () => ({ success: true }));
+        window.fbSaveUserData = window.fbSaveUserData || (async () => {});
+        window.fbLoadUserData = window.fbLoadUserData || (async () => null);
+
+        try {
+            const { initializeApp } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js");
+            const { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js");
+            const { getFirestore, doc, setDoc, getDoc, collection, getDocs, deleteDoc } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
+
+            const firebaseConfig = {
+                apiKey: "AIzaSyDrtnD71GRdzKNZcVZEBGwpFZ_460cikEU",
+                authDomain: "ploriv.firebaseapp.com",
+                databaseURL: "https://ploriv-default-rtdb.asia-southeast1.firebasedatabase.app",
+                projectId: "ploriv",
+                storageBucket: "ploriv.firebasestorage.app",
+                messagingSenderId: "148196399273",
+                appId: "1:148196399273:web:08202303aff5cecf30b1b8"
+            };
+
+            window.firebaseApp = initializeApp(firebaseConfig);
+            window.firebaseAuth = getAuth(window.firebaseApp);
+            window.firebaseDb = getFirestore(window.firebaseApp);
+
+            window.fbSignUp = async function(plorivCore, password, profileData) {
+                try {
+                    let email = plorivCore.trim().toLowerCase();
+                    if (!email.includes('@')) email += '@ploriv.com';
+                    const cred = await createUserWithEmailAndPassword(window.firebaseAuth, email, password);
+                    const userDocRef = doc(window.firebaseDb, 'artifacts', 'ploriv_browser', 'users', cred.user.uid);
+                    await setDoc(userDocRef, { profile: profileData, email: email }, { merge: true });
+                    if (typeof logConsole === 'function') logConsole('Account created: ' + email);
+                    return { success: true, user: cred.user };
+                } catch (e) {
+                    if (typeof logConsole === 'function') logConsole('Sign up error: ' + e.message);
+                    return { success: false, error: e.message };
+                }
+            };
+
+            window.fbSignIn = async function(plorivCore, password) {
+                try {
+                    let email = plorivCore.trim().toLowerCase();
+                    if (!email.includes('@')) email += '@ploriv.com';
+                    const cred = await signInWithEmailAndPassword(window.firebaseAuth, email, password);
+                    if (typeof logConsole === 'function') logConsole('Signed in: ' + email);
+                    return { success: true, user: cred.user };
+                } catch (e) {
+                    if (typeof logConsole === 'function') logConsole('Sign in error: ' + e.message);
+                    return { success: false, error: e.message };
+                }
+            };
+
+            window.fbSignOut = async function() {
+                try {
+                    await signOut(window.firebaseAuth);
+                    return { success: true };
+                } catch (e) {
+                    return { success: false, error: e.message };
+                }
+            };
+
+            window.fbSaveUserData = async function(userId, data) {
+                if (!userId) return;
+                try {
+                    const docRef = doc(window.firebaseDb, 'artifacts', 'ploriv_browser', 'users', userId);
+                    await setDoc(docRef, data, { merge: true });
+                } catch (e) {
+                    if (typeof logConsole === 'function') logConsole('Save error: ' + e.message);
+                }
+            };
+
+            window.fbLoadUserData = async function(userId) {
+                if (!userId) return null;
+                try {
+                    const docRef = doc(window.firebaseDb, 'artifacts', 'ploriv_browser', 'users', userId);
+                    const docSnap = await getDoc(docRef);
+                    return docSnap.exists() ? docSnap.data() : null;
+                } catch (e) {
+                    return null;
+                }
+            };
+
+            onAuthStateChanged(window.firebaseAuth, async (user) => {
+                if (user) {
+                    window.currentUser = user;
+                    if (typeof window.onUserAuthenticated === 'function') await window.onUserAuthenticated(user.uid);
+                } else {
+                    window.currentUser = null;
+                    if (typeof window.onUserSignedOut === 'function') window.onUserSignedOut();
+                }
+                if (typeof window.updateSettingsAccountUI === 'function') window.updateSettingsAccountUI();
+                else if (typeof updateSettingsAccountUI === 'function') updateSettingsAccountUI();
+            });
+            window.fbPublishPublicSite = async function(domain, meta) {
+                try {
+                    const ref = doc(window.firebaseDb, 'artifacts', 'ploriv_browser', 'public_sites', domain.replace(/[\/#.$\[\]]/g, '_'));
+                    await setDoc(ref, {
+                        domain: domain,
+                        title: meta.title || domain,
+                        imageUrl: meta.imageUrl || '',
+                        owner: meta.owner || '',
+                        rawCode: meta.rawCode || '',
+                        duration: meta.duration || '',
+                        updatedAt: new Date().toISOString()
+                    }, { merge: true });
+                } catch (e) {
+                    if (typeof logConsole === 'function') logConsole('Public site publish: ' + e.message);
+                }
+            };
+
+            window.fbDeletePublicSite = async function(domain) {
+                try {
+                    const ref = doc(window.firebaseDb, 'artifacts', 'ploriv_browser', 'public_sites', domain.replace(/[\/#.$\[\]]/g, '_'));
+                    await deleteDoc(ref);
+                } catch (e) {}
+            };
+
+            window.fbLoadPublicSites = async function() {
+                try {
+                    const col = collection(window.firebaseDb, 'artifacts', 'ploriv_browser', 'public_sites');
+                    const snap = await getDocs(col);
+                    const map = JSON.parse(localStorage.getItem('ploriv_public_sites') || '{}');
+                    snap.forEach(d => {
+                        const data = d.data();
+                        const domain = data.domain || d.id;
+                        map[domain] = data;
+                    });
+                    localStorage.setItem('ploriv_public_sites', JSON.stringify(map));
+                    if (typeof mergePublicSitesIntoHosted === 'function') mergePublicSitesIntoHosted();
+                } catch (e) {
+                    if (typeof logConsole === 'function') logConsole('Public sites load: ' + (e.message || e));
+                }
+            };
+
+            if (typeof window.markFirebaseOnline === 'function') window.markFirebaseOnline();
+            setTimeout(function() {
+                if (typeof window.markFirebaseOnline === 'function') window.markFirebaseOnline();
+                if (typeof updateSettingsAccountUI === 'function') updateSettingsAccountUI();
+                if (typeof window.fbLoadPublicSites === 'function') window.fbLoadPublicSites();
+            }, 800);
+        } catch (err) {
+            console.warn('Firebase unavailable:', err && err.message);
+            if (typeof logConsole === 'function') logConsole('Cloud connection failed — retry on HTTPS host.');
+        }
+    </script>
+</head>
+<body class="h-screen w-screen overflow-hidden flex flex-col select-none" style="background: var(--bg); color: var(--text);">
+
+    <!-- Title bar + tabs -->
+    <div class="shrink-0" style="background: var(--surface);">
+        <div class="h-10 flex items-end px-2 gap-1 border-b" style="border-color: var(--border);" id="tabs-container">
+        </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="shrink-0 flex items-center gap-1.5 px-2.5 py-2 border-b" style="background: var(--bg); border-color: var(--border);" id="nav-bar-container">
+        <div class="flex items-center gap-0.5 shrink-0">
+            <button onclick="goBack()" class="w-8 h-8 rounded-full text-[var(--muted)] hover:text-[var(--text)] hover:bg-white/5 flex items-center justify-center disabled:opacity-30" id="back-btn" title="Back">
+                <i class="fa-solid fa-chevron-left text-[11px]"></i>
+            </button>
+            <button onclick="goForward()" class="w-8 h-8 rounded-full text-[var(--muted)] hover:text-[var(--text)] hover:bg-white/5 flex items-center justify-center disabled:opacity-30" id="forward-btn" title="Forward">
+                <i class="fa-solid fa-chevron-right text-[11px]"></i>
+            </button>
+            <button onclick="reloadPage()" class="w-8 h-8 rounded-full text-[var(--muted)] hover:text-[var(--text)] hover:bg-white/5 flex items-center justify-center" title="Reload">
+                <i class="fa-solid fa-rotate-right text-[11px]"></i>
+            </button>
+        </div>
+
+        <div class="omnibox flex-1 flex items-center min-w-0 rounded-full px-3.5 py-2 border" style="background: var(--surface); border-color: var(--border);">
+            <i class="fa-solid fa-lock text-[10px] mr-2.5 shrink-0" style="color: #a8e6c3;" id="ssl-icon" title="Secure"></i>
+            <input type="text" id="url-input" class="w-full bg-transparent text-[13px] outline-none font-medium placeholder:text-[var(--muted)]" style="color: var(--text);" placeholder="Search with Velox or enter address" onkeydown="handleUrlKeydown(event)">
+            <button onclick="toggleBookmarkCurrent()" class="text-[var(--muted)] hover:text-amber-400 ml-2 shrink-0 text-sm" id="bookmark-star-btn" title="Bookmark">
+                <i class="fa-regular fa-star"></i>
+            </button>
+        </div>
+
+        <button onclick="navigateTo('home')" class="w-8 h-8 rounded-full text-[var(--muted)] hover:text-[var(--text)] hover:bg-white/5 flex items-center justify-center shrink-0" title="Home">
+            <i class="fa-solid fa-house text-[11px]"></i>
+        </button>
+        <button onclick="window.openSettingsModal()" class="w-8 h-8 rounded-full text-[var(--muted)] hover:text-[var(--text)] hover:bg-white/5 flex items-center justify-center shrink-0" title="Menu">
+            <i class="fa-solid fa-ellipsis text-sm"></i>
+        </button>
+    </div>
+
+    <div class="flex-1 flex flex-col relative overflow-hidden min-h-0" style="background: var(--bg);" id="browser-main-area">
+        <div class="flex-1 overflow-y-auto relative" id="viewport-container"></div>
+
+        <div id="devtools-drawer" class="h-48 border-t hidden flex flex-col z-20" style="background: var(--surface); border-color: var(--border);">
+            <div class="h-9 px-4 flex items-center justify-between border-b text-xs" style="border-color: var(--border);">
+                <span class="font-medium flex items-center gap-2" style="color: var(--text);"><i class="fa-solid fa-terminal text-[var(--muted)]"></i> Console</span>
+                <div class="flex items-center gap-3">
+                    <button onclick="clearConsole()" class="text-[var(--muted)] hover:text-white">Clear</button>
+                    <button onclick="toggleDevTools()" class="text-[var(--muted)] hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            </div>
+            <div id="console-logs" class="flex-1 p-3 overflow-y-auto font-mono text-xs space-y-1" style="color: var(--muted);">
+                <div style="color: var(--accent);">[Ploriv] Ready</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="auth-modal" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-[#0c0e12] border border-white/10 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden">
+            <div class="px-6 pt-5 pb-3 flex items-center justify-between border-b border-white/5">
+                <h3 class="font-semibold text-white text-sm" id="auth-modal-title">Sign in</h3>
+                <button onclick="window.closeAuthModal()" class="w-8 h-8 rounded-lg hover:bg-white/5 text-slate-500 hover:text-white flex items-center justify-center transition"><i class="fa-solid fa-xmark text-sm"></i></button>
+            </div>
+
+            <!-- LOGIN VIEW -->
+            <div id="auth-view-login" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-[11px] font-medium text-slate-500 mb-1.5 uppercase tracking-wide">Username or email</label>
+                    <input type="text" id="auth-core-input" class="w-full bg-[#161920] border border-white/10 rounded-xl px-3.5 py-2.5 text-slate-100 outline-none focus:border-white/25 text-sm" placeholder="username or you@ploriv.com" autocomplete="username">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-medium text-slate-500 mb-1.5 uppercase tracking-wide">Password</label>
+                    <input type="password" id="auth-password-input" class="w-full bg-[#161920] border border-white/10 rounded-xl px-3.5 py-2.5 text-slate-100 outline-none focus:border-white/25 text-sm" placeholder="••••••••" autocomplete="current-password">
+                </div>
+                <div id="auth-error-msg" class="text-xs text-rose-400 hidden p-3 bg-rose-950/40 border border-rose-900/40 rounded-xl"></div>
+                <button onclick="window.handleLogin()" class="w-full py-2.5 bg-white text-black font-semibold rounded-xl text-sm hover:bg-slate-200 transition">Sign in</button>
+                <p class="text-center text-xs text-slate-500">No account? <button onclick="window.showAuthSignupStep(1)" class="text-slate-300 hover:text-white font-medium underline-offset-2 hover:underline">Create one</button></p>
+            </div>
+
+            <!-- SIGNUP STEP 1: Profile -->
+            <div id="auth-view-signup1" class="p-6 space-y-3.5 hidden">
+                <p class="text-[11px] text-slate-500 mb-1">Step 1 of 2 — Profile details</p>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-medium text-slate-500 mb-1.5">First name</label>
+                        <input type="text" id="auth-firstname" class="w-full bg-[#161920] border border-white/10 rounded-xl px-3 py-2.5 text-slate-100 outline-none focus:border-white/25 text-sm" placeholder="Alex">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-medium text-slate-500 mb-1.5">Surname</label>
+                        <input type="text" id="auth-surname" class="w-full bg-[#161920] border border-white/10 rounded-xl px-3 py-2.5 text-slate-100 outline-none focus:border-white/25 text-sm" placeholder="Sharma">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-medium text-slate-500 mb-1.5">Date of birth</label>
+                    <input type="date" id="auth-dob" class="w-full bg-[#161920] border border-white/10 rounded-xl px-3 py-2.5 text-slate-100 outline-none focus:border-white/25 text-sm">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-medium text-slate-500 mb-1.5">Gender</label>
+                    <select id="auth-gender" class="w-full bg-[#161920] border border-white/10 rounded-xl px-3 py-2.5 text-slate-100 outline-none focus:border-white/25 text-sm">
+                        <option value="">Prefer not to say</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-medium text-slate-500 mb-1.5">Mobile number <span class="text-slate-600">(optional)</span></label>
+                    <input type="tel" id="auth-mobile" class="w-full bg-[#161920] border border-white/10 rounded-xl px-3 py-2.5 text-slate-100 outline-none focus:border-white/25 text-sm" placeholder="+91 98765 43210">
+                </div>
+                <div id="auth-error-msg-s1" class="text-xs text-rose-400 hidden p-3 bg-rose-950/40 border border-rose-900/40 rounded-xl"></div>
+                <div class="flex gap-2 pt-1">
+                    <button onclick="window.showAuthLogin()" class="flex-1 py-2.5 bg-white/5 text-slate-300 font-medium rounded-xl text-sm hover:bg-white/10 transition">Back</button>
+                    <button onclick="window.showAuthSignupStep(2)" class="flex-1 py-2.5 bg-white text-black font-semibold rounded-xl text-sm hover:bg-slate-200 transition">Continue</button>
+                </div>
+            </div>
+
+            <!-- SIGNUP STEP 2: Credentials -->
+            <div id="auth-view-signup2" class="p-6 space-y-3.5 hidden">
+                <p class="text-[11px] text-slate-500 mb-1">Step 2 of 2 — Account credentials</p>
+                <div>
+                    <label class="block text-[11px] font-medium text-slate-500 mb-1.5">Username</label>
+                    <div class="flex items-center gap-2">
+                        <input type="text" id="auth-username" class="flex-1 bg-[#161920] border border-white/10 rounded-xl px-3 py-2.5 text-slate-100 outline-none focus:border-white/25 text-sm" placeholder="alex">
+                        <span class="text-xs text-slate-500 shrink-0">@ploriv.com</span>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-medium text-slate-500 mb-1.5">Password</label>
+                    <input type="password" id="auth-password-signup" class="w-full bg-[#161920] border border-white/10 rounded-xl px-3 py-2.5 text-slate-100 outline-none focus:border-white/25 text-sm" placeholder="Min. 8 characters">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-medium text-slate-500 mb-1.5">Confirm password</label>
+                    <input type="password" id="auth-password-confirm" class="w-full bg-[#161920] border border-white/10 rounded-xl px-3 py-2.5 text-slate-100 outline-none focus:border-white/25 text-sm" placeholder="Repeat password">
+                </div>
+                <div id="auth-error-msg-s2" class="text-xs text-rose-400 hidden p-3 bg-rose-950/40 border border-rose-900/40 rounded-xl"></div>
+                <div class="flex gap-2 pt-1">
+                    <button onclick="window.showAuthSignupStep(1)" class="flex-1 py-2.5 bg-white/5 text-slate-300 font-medium rounded-xl text-sm hover:bg-white/10 transition">Back</button>
+                    <button onclick="window.handleSignUp()" class="flex-1 py-2.5 bg-white text-black font-semibold rounded-xl text-sm hover:bg-slate-200 transition">Create account</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Account Profile Modal -->
+    <div id="account-profile-modal" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-[#0c0e12] border border-white/10 rounded-2xl w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="px-6 pt-5 pb-3 flex items-center justify-between border-b border-white/5 sticky top-0 bg-[#0c0e12]">
+                <h3 class="font-semibold text-white text-sm">Account settings</h3>
+                <button onclick="window.closeAccountProfileModal()" class="w-8 h-8 rounded-lg hover:bg-white/5 text-slate-500 hover:text-white flex items-center justify-center transition"><i class="fa-solid fa-xmark text-sm"></i></button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-medium text-slate-500 mb-1.5">First name</label>
+                        <input type="text" id="profile-firstname" class="w-full bg-[#161920] border border-white/10 rounded-xl px-3 py-2.5 text-slate-100 outline-none focus:border-white/25 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-medium text-slate-500 mb-1.5">Surname</label>
+                        <input type="text" id="profile-surname" class="w-full bg-[#161920] border border-white/10 rounded-xl px-3 py-2.5 text-slate-100 outline-none focus:border-white/25 text-sm">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-medium text-slate-500 mb-1.5">Date of birth</label>
+                    <input type="date" id="profile-dob" class="w-full bg-[#161920] border border-white/10 rounded-xl px-3 py-2.5 text-slate-100 outline-none focus:border-white/25 text-sm">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-medium text-slate-500 mb-1.5">Gender</label>
+                    <select id="profile-gender" class="w-full bg-[#161920] border border-white/10 rounded-xl px-3 py-2.5 text-slate-100 outline-none focus:border-white/25 text-sm">
+                        <option value="">Prefer not to say</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-medium text-slate-500 mb-1.5">Mobile <span class="text-slate-600">(optional)</span></label>
+                    <input type="tel" id="profile-mobile" class="w-full bg-[#161920] border border-white/10 rounded-xl px-3 py-2.5 text-slate-100 outline-none focus:border-white/25 text-sm">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-medium text-slate-500 mb-1.5">Email</label>
+                    <input type="text" id="profile-email" class="w-full bg-[#161920] border border-white/10 rounded-xl px-3 py-2.5 text-slate-400 outline-none text-sm" disabled>
+                </div>
+                <div id="profile-publish-section" class="hidden border-t border-white/5 pt-4 space-y-3">
+                    <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wide">Velox content editor</div>
+                    <p class="text-[11px] text-slate-500">Write formatted answers (bold, size, paragraphs) — only ploriv@ploriv.com.</p>
+                    <input type="text" id="velox-topic" class="w-full bg-[#161920] border border-white/10 rounded-xl px-3 py-2.5 text-slate-100 outline-none focus:border-white/25 text-sm" placeholder="Topic keywords (e.g. fukra insaan)">
+                    <input type="text" id="velox-title" class="w-full bg-[#161920] border border-white/10 rounded-xl px-3 py-2.5 text-slate-100 outline-none focus:border-white/25 text-sm" placeholder="Title (heading)">
+                    <div class="rounded-xl border border-white/10 overflow-hidden bg-[#161920]">
+                        <div class="flex flex-wrap items-center gap-1 px-2 py-1.5 border-b border-white/10 bg-[#12151a]">
+                            <button type="button" onclick="window.veloxEditorCmd('bold')" class="w-8 h-8 rounded-lg text-slate-300 hover:bg-white/10 text-sm font-bold" title="Bold">B</button>
+                            <button type="button" onclick="window.veloxEditorCmd('italic')" class="w-8 h-8 rounded-lg text-slate-300 hover:bg-white/10 text-sm italic" title="Italic">I</button>
+                            <button type="button" onclick="window.veloxEditorCmd('underline')" class="w-8 h-8 rounded-lg text-slate-300 hover:bg-white/10 text-sm underline" title="Underline">U</button>
+                            <span class="w-px h-5 bg-white/10 mx-0.5"></span>
+                            <button type="button" onclick="window.veloxEditorCmd('insertParagraph')" class="px-2 h-8 rounded-lg text-slate-300 hover:bg-white/10 text-[11px]" title="New paragraph">¶ Para</button>
+                            <button type="button" onclick="window.veloxEditorCmd('insertLineBreak')" class="px-2 h-8 rounded-lg text-slate-300 hover:bg-white/10 text-[11px]" title="Line break">↵ Line</button>
+                            <span class="w-px h-5 bg-white/10 mx-0.5"></span>
+                            <select id="velox-font-size" onchange="window.veloxEditorFontSize(this.value)" class="h-8 rounded-lg bg-[#1a1e26] border border-white/10 text-[11px] text-slate-200 px-1.5 outline-none" title="Font size">
+                                <option value="3">Normal</option>
+                                <option value="4">Large</option>
+                                <option value="5">Larger</option>
+                                <option value="6">Huge</option>
+                                <option value="2">Small</option>
+                            </select>
+                            <button type="button" onclick="window.veloxEditorCmd('removeFormat')" class="px-2 h-8 rounded-lg text-slate-400 hover:bg-white/10 text-[11px]" title="Clear format">Clear</button>
+                        </div>
+                        <div id="velox-body-editor" contenteditable="true" class="min-h-[140px] max-h-[220px] overflow-y-auto px-3 py-2.5 text-slate-100 text-sm outline-none leading-relaxed" style="white-space:pre-wrap;" data-placeholder="Write your answer… Select text → Bold / size / new paragraph"></div>
+                    </div>
+                    <textarea id="velox-body" class="hidden"></textarea>
+                    <button onclick="window.publishVeloxContent()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl text-sm transition">Save &amp; Publish to Velox</button>
+                </div>
+                <button onclick="window.saveAccountProfile()" class="w-full py-2.5 bg-white text-black font-semibold rounded-xl text-sm hover:bg-slate-200 transition">Save profile</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="history-modal" class="fixed inset-0 bg-[#030712]/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-[#080d19] border border-indigo-500/30 rounded-3xl w-full max-w-xl max-h-[80vh] flex flex-col shadow-2xl">
+            <div class="p-5 border-b border-indigo-500/20 flex items-center justify-between">
+                <h3 class="font-bold text-white flex items-center gap-2 text-base"><i class="fa-solid fa-clock-rotate-left text-cyan-400"></i> Browsing History</h3>
+                <button onclick="window.closeHistoryModal()" class="w-8 h-8 rounded-xl bg-[#121c33] hover:bg-rose-600/20 hover:text-rose-400 text-slate-400 flex items-center justify-center transition border border-indigo-500/20"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-5 overflow-y-auto flex-1 space-y-2.5" id="history-list-container"></div>
+        </div>
+    </div>
+
+    <div id="bookmarks-modal" class="fixed inset-0 bg-[#030712]/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-[#080d19] border border-indigo-500/30 rounded-3xl w-full max-w-xl max-h-[80vh] flex flex-col shadow-2xl">
+            <div class="p-5 border-b border-indigo-500/20 flex items-center justify-between">
+                <h3 class="font-bold text-white flex items-center gap-2 text-base"><i class="fa-solid fa-bookmark text-amber-400"></i> Bookmarks</h3>
+                <button onclick="window.closeBookmarksModal()" class="w-8 h-8 rounded-xl bg-[#121c33] hover:bg-rose-600/20 hover:text-rose-400 text-slate-400 flex items-center justify-center transition border border-indigo-500/20"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-5 overflow-y-auto flex-1 space-y-2.5" id="bookmarks-list-container"></div>
+        </div>
+    </div>
+
+    <div id="settings-modal" class="fixed inset-0 bg-black/50 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="w-full max-w-[340px] shadow-2xl max-h-[88vh] overflow-hidden flex flex-col rounded-2xl border" style="background: var(--surface); border-color: var(--border);">
+            <div class="px-4 py-4 border-b flex items-center gap-3" style="border-color: var(--border);">
+                <div class="ploriv-logo" style="width:32px;height:32px;font-size:13px;">P</div>
+                <div class="flex-1 min-w-0">
+                    <h3 class="font-semibold text-sm shine-title">Ploriv Browser</h3>
+                    <p class="text-[10px]" style="color: var(--muted);">Settings</p>
+                </div>
+                <button onclick="window.closeSettingsModal()" class="w-8 h-8 rounded-full hover:bg-white/5 flex items-center justify-center" style="color: var(--muted);"><i class="fa-solid fa-xmark text-sm"></i></button>
+            </div>
+
+            <div class="overflow-y-auto flex-1 py-2">
+                <div class="px-2 space-y-0.5">
+                    <button onclick="window.closeSettingsModal(); window.createNewTab('home', false);" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/[0.05] transition text-left" style="color: var(--text);">
+                        <i class="fa-solid fa-plus w-5 text-center text-sm" style="color: var(--accent);"></i>
+                        <span class="text-[13px]">New Tab</span>
+                    </button>
+                    <button onclick="window.closeSettingsModal(); window.createNewWindow();" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/[0.05] transition text-left" style="color: var(--text);">
+                        <i class="fa-solid fa-window-maximize w-5 text-center text-sm" style="color: var(--accent);"></i>
+                        <span class="text-[13px]">New Window</span>
+                    </button>
+                    <button onclick="window.closeSettingsModal(); window.createNewTab('home', true);" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/[0.05] transition text-left" style="color: var(--text);">
+                        <i class="fa-solid fa-user-secret w-5 text-center text-sm" style="color: var(--green);"></i>
+                        <span class="text-[13px]">New Private Tab</span>
+                    </button>
+                </div>
+
+                <div class="h-px my-2 mx-3" style="background: var(--border);"></div>
+
+                <div class="px-2 space-y-0.5">
+                    <button onclick="window.openAuthModalFromSettings();" id="auth-signin-btn-setting" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/[0.05] transition text-left" style="color: var(--text);">
+                        <i class="fa-solid fa-user-plus w-5 text-center text-sm" style="color: var(--accent);"></i>
+                        <span class="text-[13px]">Add account</span>
+                    </button>
+                    <div id="auth-user-badge-setting" class="hidden px-3 py-2">
+                        <div class="text-[12px] font-mono truncate" style="color: var(--muted);" id="auth-user-email-setting"></div>
+                        <div id="auth-status-indicator" class="text-[10px] mt-0.5" style="color: var(--green);">Connected</div>
+                    </div>
+                    <button onclick="window.closeSettingsModal(); window.openAccountProfileModal();" id="auth-account-settings-btn" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/[0.05] transition text-left hidden" style="color: var(--text);">
+                        <i class="fa-solid fa-id-card w-5 text-center text-sm" style="color: var(--accent);"></i>
+                        <span class="text-[13px]">Account settings</span>
+                    </button>
+                    <button onclick="window.logoutAccount();" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-rose-500/10 transition text-left" style="color: var(--text);">
+                        <i class="fa-solid fa-right-from-bracket w-5 text-center text-sm" style="color: #f0a0a0;"></i>
+                        <span class="text-[13px]">Logout</span>
+                    </button>
+                </div>
+
+                <div class="h-px my-2 mx-3" style="background: var(--border);"></div>
+
+                <div class="px-2 space-y-0.5">
+                    <button onclick="window.closeSettingsModal(); window.openHistoryModal();" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/[0.05] transition text-left" style="color: var(--text);">
+                        <i class="fa-solid fa-clock-rotate-left w-5 text-center text-sm" style="color: var(--accent);"></i>
+                        <span class="text-[13px]">History</span>
+                    </button>
+                    <button onclick="window.closeSettingsModal(); window.openBookmarksModal();" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/[0.05] transition text-left" style="color: var(--text);">
+                        <i class="fa-solid fa-bookmark w-5 text-center text-sm" style="color: #e8c47a;"></i>
+                        <span class="text-[13px]">Bookmarks</span>
+                    </button>
+                    <button onclick="window.closeSettingsModal(); window.openDownloadsModal();" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/[0.05] transition text-left" style="color: var(--text);">
+                        <i class="fa-solid fa-download w-5 text-center text-sm" style="color: var(--green);"></i>
+                        <span class="text-[13px]">Downloads</span>
+                    </button>
+                    <button onclick="window.showSettingsPanel('preferences')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-sky-500/10 transition text-left" style="color: var(--text);">
+                        <i class="fa-solid fa-sliders w-5 text-center text-sm" style="color:#87CEEB;"></i>
+                        <span class="text-[13px]">Settings / Preferences</span>
+                        <i class="fa-solid fa-chevron-right text-[10px] ml-auto opacity-40"></i>
+                    </button>
+                    <button onclick="window.closeSettingsModal(); window.openHelpModal();" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-sky-500/10 transition text-left" style="color: var(--text);">
+                        <i class="fa-solid fa-circle-question w-5 text-center text-sm" style="color:#87CEEB;"></i>
+                        <span class="text-[13px]">Info &amp; Help</span>
+                    </button>
+                    <button onclick="window.closeSettingsModal(); window.openAboutPlorivModal();" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/[0.05] transition text-left" style="color: var(--text);">
+                        <i class="fa-solid fa-circle-info w-5 text-center text-sm" style="color: var(--heading);"></i>
+                        <span class="text-[13px]">About Ploriv</span>
+                    </button>
+                </div>
+
+                <div id="settings-main-footer" class="h-px my-2 mx-3" style="background: var(--border);"></div>
+                <div id="settings-cloud-row" class="px-5 pb-3 flex items-center justify-between">
+                    <span class="text-[12px]" style="color: var(--muted);">Cloud Sync</span>
+                    <span id="cloud-sync-status" class="text-[10px] font-medium uppercase" style="color: var(--muted);">Offline</span>
+                </div>
+
+                <!-- Preferences panel (opened by Settings / Preferences) -->
+                <div id="settings-preferences-panel" class="hidden px-2 pb-3 space-y-1">
+                    <button onclick="window.showSettingsPanel('main')" class="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-[12px]" style="color:#87CEEB;">
+                        <i class="fa-solid fa-arrow-left text-[10px]"></i> Back
+                    </button>
+                    <div class="text-[10px] font-medium uppercase tracking-wider px-3 pt-1 pb-1.5" style="color: var(--muted);">Preferences</div>
+                    <div class="flex items-center justify-between px-3 py-2 rounded-xl">
+                        <span class="text-[13px]" style="color: var(--text);">Save passwords</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="settings-save-passwords" class="sr-only peer" checked onchange="window.toggleSavePasswords(this.checked)">
+                            <div class="w-9 h-5 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all" style="background:#3a4558;"></div>
+                        </label>
+                    </div>
+                    <div class="px-3 py-2 space-y-2">
+                        <span class="text-[13px] block" style="color: var(--text);">Homepage URL</span>
+                        <div class="flex gap-2">
+                            <input type="text" id="settings-homepage-input" class="flex-1 rounded-lg px-2.5 py-1.5 outline-none text-xs border" style="background: var(--bg); border-color: var(--border); color: var(--text);" placeholder="home">
+                            <button onclick="window.saveCustomHomepage()" class="px-2.5 py-1.5 rounded-lg text-[11px] font-medium" style="background: rgba(135,206,235,0.2); color:#87CEEB;">Save</button>
+                        </div>
+                    </div>
+                    <button onclick="window.closeSettingsModal(); window.navigateTo('ploriv.host.com');" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-sky-500/10 transition text-left" style="color: var(--text);">
+                        <i class="fa-solid fa-server w-5 text-center text-sm" style="color:#87CEEB;"></i>
+                        <span class="text-[13px]">ploriv.host.com</span>
+                    </button>
+                    <button onclick="window.closeSettingsModal(); window.navigateTo('ploriv.private.tab.history.com');" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-sky-500/10 transition text-left" style="color: var(--text);">
+                        <i class="fa-solid fa-user-secret w-5 text-center text-sm" style="color:#87CEEB;"></i>
+                        <span class="text-[13px]">Private Tab History</span>
+                    </button>
+                    <button onclick="window.clearBrowsingData();" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/[0.05] transition text-left" style="color: var(--text);">
+                        <i class="fa-solid fa-broom w-5 text-center text-sm" style="color: var(--muted);"></i>
+                        <span class="text-[13px]">Clear history & downloads</span>
+                    </button>
+                    <button onclick="window.closeSettingsModal(); window.toggleDevTools();" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/[0.05] transition text-left" style="color: var(--text);">
+                        <i class="fa-solid fa-terminal w-5 text-center text-sm" style="color: var(--muted);"></i>
+                        <span class="text-[13px]">Developer console</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Downloads Modal -->
+    <div id="downloads-modal" class="fixed inset-0 bg-black/50 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="border rounded-2xl w-full max-w-md max-h-[80vh] flex flex-col shadow-2xl" style="background: var(--surface); border-color: var(--border);">
+            <div class="px-5 py-4 border-b flex items-center justify-between" style="border-color: var(--border);">
+                <h3 class="font-semibold flex items-center gap-2 text-sm" style="color: var(--text);"><i class="fa-solid fa-download" style="color: var(--accent);"></i> Downloads</h3>
+                <button onclick="window.closeDownloadsModal()" class="w-8 h-8 rounded-lg hover:bg-white/5 flex items-center justify-center" style="color: var(--muted);"><i class="fa-solid fa-xmark text-sm"></i></button>
+            </div>
+            <div class="p-4 overflow-y-auto flex-1 space-y-2" id="downloads-list-container">
+                <div class="text-sm py-8 text-center" style="color: var(--muted);">No downloads yet.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div id="help-ploriv-modal" class="fixed inset-0 bg-black/50 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="border rounded-2xl w-full max-w-md shadow-2xl overflow-hidden max-h-[85vh] flex flex-col" style="background: var(--surface); border-color: var(--border);">
+            <div class="px-6 pt-5 pb-3 border-b flex items-center justify-between" style="border-color: var(--border);">
+                <h3 class="font-semibold text-sm" style="color:#87CEEB;">Info &amp; Help</h3>
+                <button onclick="window.closeHelpModal()" class="w-8 h-8 rounded-full hover:bg-white/5 flex items-center justify-center" style="color: var(--muted);"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="px-6 py-4 overflow-y-auto text-[13px] space-y-3 leading-relaxed" style="color:#e8e8e8;">
+                <p><span style="color:#86efac;">Search</span> — Type in the address bar or home search. Default engine is <strong>Velox</strong>. Only related answers appear.</p>
+                <p><span style="color:#86efac;">New Tab</span> — Click the <strong>+</strong> next to your tabs (like Chrome), or the + on the home screen.</p>
+                <p><span style="color:#86efac;">Bookmarks</span> — Open a page → star in the address bar → Settings → Bookmarks to open later.</p>
+                <p><span style="color:#86efac;">Host</span> — Open <strong>ploriv.host.com</strong> from Preferences to claim a domain and deploy a site (optional image URL).</p>
+                <p><span style="color:#86efac;">Private Tab</span> — Settings → New Private Tab. History is only at <strong>ploriv.private.tab.history.com</strong> (when signed in).</p>
+                <p><span style="color:#86efac;">Tab lock</span> — Hover a tab → lock icon. Locked tabs cannot close and return after refresh until unlocked.</p>
+                <p><span style="color:#86efac;">Account</span> — Add account for cloud sync (Online → Synced when logged in).</p>
+            </div>
+            <div class="px-6 pb-5">
+                <button onclick="window.closeHelpModal()" class="w-full py-2.5 rounded-xl text-sm font-semibold" style="background:rgba(135,206,235,0.2); color:#87CEEB;">Got it</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- About Ploriv Modal -->
+    <div id="about-ploriv-modal" class="fixed inset-0 bg-black/50 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="border rounded-2xl w-full max-w-md shadow-2xl overflow-hidden" style="background: var(--surface); border-color: var(--border);">
+            <div class="px-6 pt-6 pb-4 text-center border-b" style="border-color: var(--border);">
+                <div class="ploriv-logo mx-auto mb-3 glow-effect" style="width:48px;height:48px;font-size:20px;">P</div>
+                <h3 class="text-lg font-semibold shine-title">Ploriv Browser</h3>
+                <p class="text-[12px] mt-1" style="color: var(--muted);">Independent browser · India</p>
+            </div>
+            <div class="px-6 py-5 space-y-3 text-[13px] leading-relaxed" style="color: var(--page-muted);">
+                <p style="color: var(--text);">Ploriv is a sovereign browser and hosting ecosystem built for fast search, private browsing, custom domains, and cloud-synced data.</p>
+                <p>Velox powers on-device style answers from curated content. Host Studio lets you claim domains and deploy sites instantly.</p>
+                <div class="rounded-xl p-4 border mt-2" style="background: var(--bg); border-color: var(--border);">
+                    <p class="text-[11px] uppercase tracking-wide mb-1" style="color: var(--muted);">Owner &amp; CEO</p>
+                    <p class="font-semibold text-[15px]" style="color: var(--heading);">Mr. Bhagchand Bheechar</p>
+                </div>
+            </div>
+            <div class="px-6 pb-6">
+                <button onclick="window.closeAboutPlorivModal()" class="w-full py-2.5 rounded-xl text-sm font-semibold" style="background: linear-gradient(90deg,#ef4444,#f97316); color:#1c0a00;">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="domain-registrar-modal" class="fixed inset-0 bg-[#030712]/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-gradient-to-b from-[#0e1628] via-[#080d1a] to-[#04070e] border border-cyan-500/40 rounded-3xl w-full max-w-2xl p-8 shadow-2xl glow-accent relative overflow-hidden">
+            <div class="absolute -top-32 -right-32 w-72 h-72 bg-gradient-to-tr from-cyan-500/20 via-purple-600/20 to-indigo-600/20 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="flex items-center justify-between mb-6 border-b border-indigo-500/20 pb-5 relative z-10">
+                <div class="flex items-center gap-4">
+                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-cyan-400 via-indigo-600 to-purple-600 flex items-center justify-center text-white text-2xl shadow-xl shadow-cyan-500/30 border border-cyan-400/40">
+                        <i class="fa-solid fa-globe"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-extrabold text-white text-xl tracking-wide">Ploriv Domain Registrar</h3>
+                        <p class="text-xs text-cyan-300 font-semibold">Buy and claim any sovereign custom domain worldwide</p>
+                    </div>
+                </div>
+                <button onclick="window.closeDomainRegistrarModal()" class="w-9 h-9 rounded-xl bg-[#121c33] hover:bg-rose-600/20 hover:text-rose-400 text-slate-400 flex items-center justify-center transition border border-indigo-500/20"><i class="fa-solid fa-xmark text-base"></i></button>
+            </div>
+
+            <div class="space-y-6 text-sm relative z-10 max-h-[70vh] overflow-y-auto pr-2">
+                <div class="bg-[#04070e] border border-cyan-500/30 p-6 rounded-3xl space-y-4">
+                    <div class="text-xs font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-cart-shopping"></i> Step 1: Select Domain & Worldwide Extension</div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Domain Name</label>
+                            <input type="text" id="reg-domain-name" class="w-full bg-[#070b14] border border-indigo-500/30 rounded-2xl px-4 py-3 text-slate-100 outline-none focus:border-cyan-400 text-sm font-medium" placeholder="mywebsite">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Worldwide TLD</label>
+                            <select id="reg-domain-tld" class="w-full bg-[#070b14] border border-indigo-500/30 rounded-2xl px-4 py-3 text-cyan-300 outline-none focus:border-cyan-400 text-xs font-bold">
+                                <option value=".com">.com (Commercial)</option>
+                                <option value=".org">.org (Organization)</option>
+                                <option value=".net">.net (Network)</option>
+                                <option value=".io">.io (Tech / Startup)</option>
+                                <option value=".ai">.ai (Artificial Intelligence)</option>
+                                <option value=".co">.co (Company)</option>
+                                <option value=".me">.me (Personal)</option>
+                                <option value=".info">.info (Information)</option>
+                                <option value=".biz">.biz (Business)</option>
+                                <option value=".xyz">.xyz (Universal)</option>
+                                <option value=".online">.online (Digital)</option>
+                                <option value=".store">.store (E-Commerce)</option>
+                                <option value=".tech">.tech (Technology)</option>
+                                <option value=".site">.site (Website)</option>
+                                <option value=".space">.space (Creative)</option>
+                                <option value=".live">.live (Streaming)</option>
+                                <option value=".club">.club (Community)</option>
+                                <option value=".app">.app (Application)</option>
+                                <option value=".dev">.dev (Developer)</option>
+                                <option value=".in">.in (India)</option>
+                                <option value=".us">.us (United States)</option>
+                                <option value=".uk">.uk (United Kingdom)</option>
+                                <option value=".ca">.ca (Canada)</option>
+                                <option value=".de">.de (Germany)</option>
+                                <option value=".jp">.jp (Japan)</option>
+                                <option value=".au">.au (Australia)</option>
+                                <option value=".fr">.fr (France)</option>
+                                <option value=".br">.br (Brazil)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1.5">Duration (Min 1 Day to Max 5 Years)</label>
+                        <div class="grid grid-cols-2 gap-4">
+                            <input type="number" id="reg-duration-val" min="1" max="1825" value="365" class="w-full bg-[#070b14] border border-indigo-500/30 rounded-2xl px-4 py-3 text-slate-100 outline-none focus:border-cyan-400 text-sm font-medium" placeholder="365">
+                            <select id="reg-duration-unit" class="w-full bg-[#070b14] border border-indigo-500/30 rounded-2xl px-4 py-3 text-slate-300 outline-none focus:border-cyan-400 text-sm font-medium">
+                                <option value="days">Days</option>
+                                <option value="months">Months</option>
+                                <option value="years" selected>Years</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-[#04070e] border border-purple-500/30 p-6 rounded-3xl space-y-4">
+                    <div class="text-xs font-bold text-purple-400 uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-shield-halved"></i> Step 2: Ownership Claiming Details</div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Your Full Name</label>
+                            <input type="text" id="reg-owner-name" class="w-full bg-[#070b14] border border-indigo-500/30 rounded-2xl px-4 py-3 text-slate-100 outline-none focus:border-purple-400 text-sm font-medium" placeholder="Alex Sharma">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Unique Ploriv ID</label>
+                            <input type="text" id="reg-owner-plorivid" class="w-full bg-[#070b14] border border-indigo-500/30 rounded-2xl px-4 py-3 text-slate-100 outline-none focus:border-purple-400 text-sm font-medium" placeholder="alex@ploriv.com">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1.5">Special Character Passcode (<span class="text-purple-300">Required for claim security</span>)</label>
+                        <input type="password" id="reg-passcode" class="w-full bg-[#070b14] border border-indigo-500/30 rounded-2xl px-4 py-3 text-slate-100 outline-none focus:border-purple-400 text-sm font-medium" placeholder="!@#Ploriv2026Secure$%^">
+                    </div>
+                </div>
+
+                <div id="reg-error-msg" class="text-xs text-rose-400 hidden p-3.5 bg-rose-950/40 border border-rose-900/60 rounded-2xl font-medium"></div>
+
+                <div class="pt-2">
+                    <button onclick="window.purchaseCustomDomain()" class="w-full py-4 bg-gradient-to-r from-cyan-400 via-indigo-600 to-purple-600 hover:opacity-95 text-white font-bold rounded-2xl transition shadow-xl shadow-cyan-500/20 flex items-center justify-center gap-2.5 text-base tracking-wide glow-accent">
+                        <i class="fa-solid fa-cart-shopping"></i> Purchase & Claim Domain Worldwide
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="website-host-modal" class="fixed inset-0 bg-[#030713]/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-gradient-to-b from-[#0e1628] via-[#080d1a] to-[#04070e] border border-indigo-500/40 rounded-3xl w-full max-w-2xl p-8 shadow-2xl glow-effect relative overflow-hidden">
+            <div class="absolute -top-32 -right-32 w-72 h-72 bg-gradient-to-tr from-indigo-500/20 via-purple-600/20 to-cyan-600/20 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="flex items-center justify-between mb-6 border-b border-indigo-500/20 pb-5 relative z-10">
+                <div class="flex items-center gap-4">
+                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-cyan-400 flex items-center justify-center text-white text-2xl shadow-xl shadow-indigo-500/30 border border-indigo-400/40">
+                        <i class="fa-solid fa-cloud-arrow-up" id="host-modal-icon"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-extrabold text-white text-xl tracking-wide" id="host-modal-title">Website Host Studio</h3>
+                        <p class="text-xs text-indigo-300 font-semibold" id="host-modal-subtitle">Deploy code or upload files to your claimed domains</p>
+                    </div>
+                </div>
+                <button onclick="window.closeWebsiteHostModal()" class="w-9 h-9 rounded-xl bg-[#121c33] hover:bg-rose-600/20 hover:text-rose-400 text-slate-400 flex items-center justify-center transition border border-indigo-500/20"><i class="fa-solid fa-xmark text-base"></i></button>
+            </div>
+
+            <div class="space-y-6 text-sm relative z-10 max-h-[70vh] overflow-y-auto pr-2">
+                <input type="hidden" id="host-mode-action" value="deploy">
+                <div class="bg-[#04070e] border border-indigo-500/30 p-6 rounded-3xl space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Website Title</label>
+                            <input type="text" id="host-title-input" class="w-full bg-[#070b14] border border-indigo-500/30 rounded-2xl px-4 py-3 text-slate-100 outline-none focus:border-indigo-400 text-sm font-medium" placeholder="My Awesome Web App">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Select Claimed Domain</label>
+                            <select id="host-domain-select" class="w-full bg-[#070b14] border border-indigo-500/30 rounded-2xl px-4 py-3 text-cyan-300 outline-none focus:border-indigo-400 text-xs font-bold">
+                                <option value="">-- Choose your domain --</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1.5">Website Image URL <span class="text-slate-500 font-normal">(for search preview)</span></label>
+                        <input type="text" id="host-image-url" class="w-full bg-[#070b14] border border-indigo-500/30 rounded-2xl px-4 py-3 text-slate-100 outline-none focus:border-indigo-400 text-sm font-medium" placeholder="https://example.com/preview.jpg">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1.5">Hosting Source Type</label>
+                        <select id="host-source-type" onchange="window.toggleHostSourceType()" class="w-full bg-[#070b14] border border-indigo-500/30 rounded-2xl px-4 py-3 text-slate-100 outline-none focus:border-indigo-400 text-sm font-medium">
+                            <option value="code">Paste HTML / Code Text</option>
+                            <option value="file">Upload File / Folder</option>
+                        </select>
+                    </div>
+
+                    <div id="host-code-container">
+                        <label class="block text-xs font-semibold text-slate-300 mb-1.5">Website Code / HTML</label>
+                        <textarea id="host-content-input" rows="6" class="w-full bg-[#070b14] border border-indigo-500/30 rounded-2xl px-4 py-3 text-slate-100 outline-none focus:border-indigo-400 font-mono text-xs leading-relaxed" placeholder="<div class='p-8 text-center text-white'><h1 class='text-2xl font-bold'>Hello Ploriv Sovereign Web</h1></div>"></textarea>
+                    </div>
+
+                    <div id="host-file-container" class="hidden">
+                        <label class="block text-xs font-semibold text-slate-300 mb-1.5">Upload File / Folder</label>
+                        <div class="border-2 border-dashed border-indigo-500/30 hover:border-cyan-400 transition rounded-2xl p-6 text-center bg-[#070b14] cursor-pointer" onclick="document.getElementById('host-file-input').click()">
+                            <i class="fa-solid fa-cloud-arrow-up text-3xl text-cyan-400 mb-2"></i>
+                            <p class="text-xs text-slate-200 font-semibold mb-1" id="host-file-name-display">Click to upload HTML, JS, or text files</p>
+                            <input type="file" id="host-file-input" class="hidden" onchange="window.handleHostFileSelected(event)">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="host-error-msg" class="text-xs text-rose-400 hidden p-3.5 bg-rose-950/40 border border-rose-900/60 rounded-2xl font-medium"></div>
+
+                <div class="pt-2">
+                    <button onclick="window.deployHostedWebsite()" id="host-submit-btn" class="w-full py-4 bg-gradient-to-r from-indigo-600 via-purple-600 to-cyan-500 hover:opacity-95 text-white font-bold rounded-2xl transition shadow-xl shadow-indigo-500/20 flex items-center justify-center gap-2.5 text-base tracking-wide">
+                        <i class="fa-solid fa-globe"></i> Deploy Website to Domain
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let tabs = [];
+        let activeTabId = null;
+        let historyData = [];
+        let privateHistoryData = [];
+        let bookmarksData = [];
+        let hostedSites = {};
+        let settings = {
+            homepage: 'home',
+            savePasswords: true
+        };
+        // Seed Velox content (ploriv@ploriv.com) — full-text searchable
+        let veloxSyncedContent = {
+            'ploriv': {
+                title: 'Ploriv Web',
+                summary: 'Ploriv is a browser and hosting platform with Velox search, private tabs, and cloud sync.\n\nHost your site at ploriv.host.com. Owner & CEO: Mr. Bhagchand Bheechar.',
+                author: 'system',
+                syncedAt: '2026-09-24T00:00:00.000Z',
+                source: 'Ploriv Cloud'
+            },
+            'fukra insaan': {
+                title: 'Fukra Insaan',
+                summary: 'Fukra Insaan (real name: Abhishek Malhan) is an Indian YouTuber and content creator.\n\nHe is known for comedy sketches, vlogs and reality TV such as Lock Upp. His content mixes humour, lifestyle and entertainment.',
+                author: 'system',
+                syncedAt: '2026-09-24T06:00:00.000Z',
+                source: 'Ploriv Cloud'
+            },
+            'india': {
+                title: 'India',
+                summary: 'India is a country which is the 7th largest country in the world by land area.\n\nIt is a federal democratic republic in South Asia and the world\'s most populous country, known for cultural diversity, technology, and heritage.',
+                author: 'system',
+                syncedAt: '2026-09-20T00:00:00.000Z',
+                source: 'Ploriv Cloud'
+            },
+            '7th largest country': {
+                title: '7th Largest Country',
+                summary: 'India is the 7th largest country in the world by total geographical area.\n\nIt spans about 3.287 million square kilometers across South Asia.',
+                author: 'system',
+                syncedAt: '2026-09-20T00:00:00.000Z',
+                source: 'Ploriv Cloud'
+            }
+        };
+
+        function escapeHtml(s) {
+            return String(s || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        // Google-style answer: paragraphs, bold query words, larger lead line
+        function formatVeloxAnswerHtml(text, query) {
+            let t = String(text || '').trim();
+            if (!t) return '';
+            // Normalize line breaks
+            t = t.replace(/\r\n/g, '\n').replace(/\n{3,}/g, '\n\n');
+            const parts = t.split(/\n\n+/);
+            const qToks = veloxTokens(query).filter(w => w.length >= 2);
+            // Also bold multi-word query
+            const qPhrase = (query || '').trim().toLowerCase();
+
+            function boldTerms(htmlPlain) {
+                let out = escapeHtml(htmlPlain);
+                // Bold full phrase first
+                if (qPhrase.length >= 3) {
+                    const reP = new RegExp('(' + qPhrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+                    out = out.replace(reP, '<strong style="color:#fff;font-weight:700;">$1</strong>');
+                }
+                qToks.sort((a, b) => b.length - a.length);
+                qToks.forEach(tok => {
+                    if (tok.length < 3) return;
+                    const re = new RegExp('\\b(' + tok.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')\\b', 'gi');
+                    out = out.replace(re, '<strong style="color:#fff;font-weight:700;">$1</strong>');
+                });
+                return out;
+            }
+
+            if (parts.length === 1) {
+                // Split long single paragraph into 2–3 readable chunks by sentence
+                const sentences = t.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [t];
+                if (sentences.length > 2) {
+                    const lead = boldTerms(sentences[0].trim());
+                    const rest = boldTerms(sentences.slice(1).join(' ').trim());
+                    return `<p class="mb-4 text-[19px] md:text-[21px] leading-[1.55] font-medium" style="color:#ffffff;">${lead}</p><p class="text-[16px] md:text-[17px] leading-[1.7]" style="color:#ffffff;">${rest}</p>`;
+                }
+                return `<p class="text-[17px] md:text-[18px] leading-[1.7]" style="color:#ffffff;">${boldTerms(t)}</p>`;
+            }
+
+            return parts.map((p, i) => {
+                const body = boldTerms(p.trim());
+                if (i === 0) {
+                    return `<p class="mb-4 text-[19px] md:text-[21px] leading-[1.55] font-medium" style="color:#ffffff;">${body}</p>`;
+                }
+                return `<p class="mb-3 text-[16px] md:text-[17px] leading-[1.7]" style="color:#ffffff;">${body}</p>`;
+            }).join('');
+        }
+
+        function veloxTokens(str) {
+            return String(str || '').toLowerCase()
+                .replace(/[^a-z0-9\s]/g, ' ')
+                .split(/\s+/)
+                .filter(w => w.length > 1 && !['is','a','an','the','of','in','to','and','or','for','on','by','as','it','which'].includes(w));
+        }
+
+        function veloxTextMatches(query, entry) {
+            // Only title + summary — never match on author/email (avoids "ploriv" → random entries)
+            const title = (entry.title || '').toLowerCase();
+            const summary = (entry.summary || '').toLowerCase();
+            const blob = title + ' ' + summary;
+            const q = query.toLowerCase().trim();
+            if (!q || q.length < 2) return false;
+            if (title === q || title.includes(q) || q.includes(title)) return true;
+            if (blob.includes(q)) return true;
+            const qToks = veloxTokens(q);
+            if (qToks.length === 0) return false;
+            // Require almost all query tokens in the entry (strict relevance)
+            const hits = qToks.filter(t => blob.includes(t));
+            const need = qToks.length === 1 ? 1 : Math.ceil(qToks.length * 0.75);
+            return hits.length >= need;
+        }
+
+        function buildVeloxOverview(query, hits) {
+            if (!hits.length) return null;
+            const primary = hits[0];
+            let body = primary.summary || '';
+            hits.slice(1).forEach(h => {
+                if (h.summary && !body.includes(h.summary.slice(0, 40))) {
+                    body += '\n\n' + h.summary;
+                }
+            });
+            // Prefer publisher HTML (bold, sizes, paragraphs) when saved
+            let bodyHtml = '';
+            if (primary.summaryHtml && primary.summaryHtml.trim()) {
+                bodyHtml = '<div class="velox-rich text-[16px] md:text-[17px] leading-[1.7]" style="color:#ffffff;">' + primary.summaryHtml + '</div>';
+                hits.slice(1).forEach(h => {
+                    if (h.summaryHtml) {
+                        bodyHtml += '<div class="mt-4 velox-rich text-[16px] leading-[1.7]" style="color:#ffffff;">' + h.summaryHtml + '</div>';
+                    } else if (h.summary) {
+                        bodyHtml += formatVeloxAnswerHtml(h.summary, query);
+                    }
+                });
+            } else {
+                bodyHtml = formatVeloxAnswerHtml(body.trim(), query);
+            }
+            return {
+                headline: primary.title,
+                body: body.trim(),
+                bodyHtml: bodyHtml
+            };
+        }
+
+        window.saveCustomHomepage = function() {
+            const val = document.getElementById('settings-homepage-input').value.trim();
+            if (val) {
+                settings.homepage = val;
+                alertBox('Homepage Updated', `Custom homepage set to: ${val}`);
+                window.closeSettingsModal();
+                if (window.saveUserDataToCloud) window.saveUserDataToCloud();
+            }
+        };
+
+        window.deletePrivateHistoryItem = function(index) {
+            privateHistoryData.splice(index, 1);
+            renderActivePage();
+            if (window.saveUserDataToCloud) window.saveUserDataToCloud();
+        };
+
+        window.clearAllPrivateHistory = function() {
+            privateHistoryData = [];
+            renderActivePage();
+            if (window.saveUserDataToCloud) window.saveUserDataToCloud();
+        };
+
+        window.openSettingsModal = function() {
+            const m = document.getElementById('settings-modal');
+            if (m) {
+                m.classList.remove('hidden');
+                if (typeof window.showSettingsPanel === 'function') window.showSettingsPanel('main');
+                updateSettingsAccountUI();
+                const hpInput = document.getElementById('settings-homepage-input');
+                if (hpInput) hpInput.value = settings.homepage;
+                const savePw = document.getElementById('settings-save-passwords');
+                if (savePw) savePw.checked = settings.savePasswords !== false;
+            }
+        };
+        window.closeSettingsModal = function() {
+            const m = document.getElementById('settings-modal');
+            if (m) m.classList.add('hidden');
+        };
+
+        window.openAuthModal = function() {
+            const m = document.getElementById('auth-modal');
+            if (m) {
+                m.classList.remove('hidden');
+                window.showAuthLogin();
+            }
+        };
+
+        window.openAuthModalFromSettings = function() {
+            const settingsModal = document.getElementById('settings-modal');
+            if (settingsModal) settingsModal.classList.add('hidden');
+            window.openAuthModal();
+        };
+
+        window.closeAuthModal = function() {
+            const m = document.getElementById('auth-modal');
+            if (m) m.classList.add('hidden');
+        };
+
+        window.openHistoryModal = function() {
+            const m = document.getElementById('history-modal');
+            if (m) {
+                m.classList.remove('hidden');
+                renderHistoryList();
+            }
+        };
+        window.closeHistoryModal = function() {
+            const m = document.getElementById('history-modal');
+            if (m) m.classList.add('hidden');
+        };
+
+        window.openBookmarksModal = function() {
+            const m = document.getElementById('bookmarks-modal');
+            if (m) {
+                m.classList.remove('hidden');
+                renderBookmarksList();
+            }
+        };
+        window.closeBookmarksModal = function() {
+            const m = document.getElementById('bookmarks-modal');
+            if (m) m.classList.add('hidden');
+        };
+
+        window.toggleDevTools = function() {
+            const dt = document.getElementById('devtools-drawer');
+            if (dt) dt.classList.toggle('hidden');
+        };
+
+        window.clearConsole = function() {
+            const logs = document.getElementById('console-logs');
+            if (logs) {
+                logs.innerHTML = '<div class="text-cyan-400">[Ploriv Core]: Console cleared.</div>';
+            }
+        };
+
+        window.logoutAccount = async function() {
+            if (window.fbSignOut) {
+                await window.fbSignOut();
+                updateSettingsAccountUI();
+            }
+        };
+
+        function updateSettingsAccountUI() {
+            const badge = document.getElementById('auth-user-badge-setting');
+            const emailSpan = document.getElementById('auth-user-email-setting');
+            const signinBtn = document.getElementById('auth-signin-btn-setting');
+            const statusIndicator = document.getElementById('auth-status-indicator');
+            const cloudStatus = document.getElementById('cloud-sync-status');
+            const acctBtn = document.getElementById('auth-account-settings-btn');
+
+            if (window.currentUser) {
+                if (badge) badge.classList.remove('hidden');
+                if (emailSpan) emailSpan.innerText = window.currentUser.email;
+                if (signinBtn) signinBtn.classList.add('hidden');
+                if (acctBtn) acctBtn.classList.remove('hidden');
+                if (statusIndicator) statusIndicator.innerText = "Connected";
+                if (cloudStatus) {
+                    cloudStatus.innerText = "Synced";
+                    cloudStatus.style.color = "var(--green)";
+                    cloudStatus.className = "text-[10px] font-medium uppercase";
+                }
+            } else {
+                if (badge) badge.classList.add('hidden');
+                if (signinBtn) signinBtn.classList.remove('hidden');
+                if (acctBtn) acctBtn.classList.add('hidden');
+                if (statusIndicator) statusIndicator.innerText = "Not Logged In";
+                if (cloudStatus) {
+                    // Firebase connected = Online; needs account for full sync
+                    const online = !!(window.firebaseAuth || window.firebaseApp);
+                    cloudStatus.innerText = online ? "Online" : "Connecting…";
+                    cloudStatus.style.color = online ? "var(--green)" : "var(--accent)";
+                    cloudStatus.className = "text-[10px] font-medium uppercase";
+                }
+            }
+        }
+
+        window.markFirebaseOnline = function() {
+            const cloudStatus = document.getElementById('cloud-sync-status');
+            if (cloudStatus && !window.currentUser) {
+                cloudStatus.innerText = "Online";
+                cloudStatus.style.color = "var(--green)";
+            }
+        };
+
+        window.createNewWindow = function() {
+            // Simulated new window — creates a fresh private-like session tab for multi-window feel
+            window.createNewTab('home', false);
+            logConsole('New Window opened (simulated multi-window session).');
+            alertBox('New Window', 'A new browser window session has been started.');
+        };
+
+        window.openDownloadsModal = function() {
+            const m = document.getElementById('downloads-modal');
+            if (m) {
+                m.classList.remove('hidden');
+                renderDownloadsList();
+            }
+        };
+        window.closeDownloadsModal = function() {
+            const m = document.getElementById('downloads-modal');
+            if (m) m.classList.add('hidden');
+        };
+
+        let downloadsData = [];
+        function renderDownloadsList() {
+            const container = document.getElementById('downloads-list-container');
+            if (!container) return;
+            if (downloadsData.length === 0) {
+                container.innerHTML = '<div class="text-slate-500 text-sm py-8 text-center">No downloads yet.</div>';
+                return;
+            }
+            let html = '';
+            downloadsData.forEach((d, i) => {
+                html += `
+                    <div class="p-3 bg-white/5 border border-white/5 rounded-xl flex items-center justify-between">
+                        <div class="min-w-0">
+                            <div class="text-sm font-medium text-white truncate">${d.filename}</div>
+                            <div class="text-[11px] text-slate-500">${d.timestamp}</div>
+                        </div>
+                        <span class="text-[10px] text-teal-400 font-semibold uppercase">Done</span>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        window.toggleSavePasswords = function(enabled) {
+            settings.savePasswords = !!enabled;
+            logConsole('Save Passwords: ' + (enabled ? 'Enabled' : 'Disabled'));
+            if (window.saveUserDataToCloud) window.saveUserDataToCloud();
+        };
+
+        window.clearBrowsingData = function() {
+            if (!confirm('Clear browsing history and downloads?')) return;
+            historyData = [];
+            privateHistoryData = [];
+            downloadsData = [];
+            if (window.saveUserDataToCloud) window.saveUserDataToCloud();
+            window.closeSettingsModal();
+            alertBox('Cleared', 'History and downloads removed.');
+        };
+
+        window.openAboutPlorivModal = function() {
+            const m = document.getElementById('about-ploriv-modal');
+            if (m) m.classList.remove('hidden');
+        };
+        window.closeAboutPlorivModal = function() {
+            const m = document.getElementById('about-ploriv-modal');
+            if (m) m.classList.add('hidden');
+        };
+
+        window.showSettingsPanel = function(which) {
+            const prefs = document.getElementById('settings-preferences-panel');
+            if (!prefs) return;
+            const scroll = prefs.parentElement;
+            Array.from(scroll.children).forEach(ch => {
+                if (ch.id === 'settings-preferences-panel') {
+                    ch.classList.toggle('hidden', which !== 'preferences');
+                } else {
+                    ch.classList.toggle('hidden', which === 'preferences');
+                }
+            });
+        };
+
+        window.openHelpModal = function() {
+            const m = document.getElementById('help-ploriv-modal');
+            if (m) m.classList.remove('hidden');
+        };
+        window.closeHelpModal = function() {
+            const m = document.getElementById('help-ploriv-modal');
+            if (m) m.classList.add('hidden');
+        };
+
+        window.showSettingsPanel = window.showSettingsPanel || function() {};
+
+        let userProfile = {};
+        let pendingSignupProfile = {};
+
+        window.showAuthLogin = function() {
+            document.getElementById('auth-view-login').classList.remove('hidden');
+            document.getElementById('auth-view-signup1').classList.add('hidden');
+            document.getElementById('auth-view-signup2').classList.add('hidden');
+            document.getElementById('auth-modal-title').innerText = 'Sign in';
+        };
+        window.showAuthSignupStep = function(step) {
+            document.getElementById('auth-view-login').classList.add('hidden');
+            document.getElementById('auth-view-signup1').classList.add('hidden');
+            document.getElementById('auth-view-signup2').classList.add('hidden');
+            if (step === 1) {
+                document.getElementById('auth-view-signup1').classList.remove('hidden');
+                document.getElementById('auth-modal-title').innerText = 'Create account';
+            } else if (step === 2) {
+                const first = document.getElementById('auth-firstname').value.trim();
+                const surname = document.getElementById('auth-surname').value.trim();
+                const dob = document.getElementById('auth-dob').value;
+                const err = document.getElementById('auth-error-msg-s1');
+                if (!first || !surname) {
+                    err.innerText = 'Please enter first name and surname.';
+                    err.classList.remove('hidden');
+                    document.getElementById('auth-view-signup1').classList.remove('hidden');
+                    return;
+                }
+                err.classList.add('hidden');
+                pendingSignupProfile = {
+                    firstName: first,
+                    surname: surname,
+                    name: first + ' ' + surname,
+                    dob: dob || '',
+                    gender: document.getElementById('auth-gender').value || '',
+                    mobile: document.getElementById('auth-mobile').value.trim() || ''
+                };
+                document.getElementById('auth-view-signup2').classList.remove('hidden');
+                document.getElementById('auth-modal-title').innerText = 'Create account';
+            }
+        };
+
+        window.handleLogin = async function() {
+            const core = document.getElementById('auth-core-input').value;
+            const pass = document.getElementById('auth-password-input').value;
+            const errDiv = document.getElementById('auth-error-msg');
+            if (!core || !pass) {
+                errDiv.innerText = "Enter username and password.";
+                errDiv.classList.remove('hidden');
+                return;
+            }
+            const res = await window.fbSignIn(core, pass);
+            if (res.success) {
+                errDiv.classList.add('hidden');
+                window.closeAuthModal();
+                updateSettingsAccountUI();
+                alertBox('Signed in', 'Welcome back.');
+            } else {
+                errDiv.innerText = res.error;
+                errDiv.classList.remove('hidden');
+            }
+        };
+
+        window.handleSignUp = async function() {
+            const core = document.getElementById('auth-username').value.trim();
+            const pass = document.getElementById('auth-password-signup').value;
+            const pass2 = document.getElementById('auth-password-confirm').value;
+            const errDiv = document.getElementById('auth-error-msg-s2');
+            if (!core || !pass) {
+                errDiv.innerText = "Enter username and password.";
+                errDiv.classList.remove('hidden');
+                return;
+            }
+            if (pass.length < 8) {
+                errDiv.innerText = "Password must be at least 8 characters.";
+                errDiv.classList.remove('hidden');
+                return;
+            }
+            if (pass !== pass2) {
+                errDiv.innerText = "Passwords do not match.";
+                errDiv.classList.remove('hidden');
+                return;
+            }
+            const profileData = { ...pendingSignupProfile };
+            const res = await window.fbSignUp(core, pass, profileData);
+            if (res.success) {
+                errDiv.classList.add('hidden');
+                userProfile = profileData;
+                window.closeAuthModal();
+                updateSettingsAccountUI();
+                alertBox('Account created', 'Your Ploriv account is ready.');
+            } else {
+                errDiv.innerText = res.error;
+                errDiv.classList.remove('hidden');
+            }
+        };
+
+        window.openAccountProfileModal = function() {
+            const m = document.getElementById('account-profile-modal');
+            if (!m) return;
+            m.classList.remove('hidden');
+            document.getElementById('profile-firstname').value = userProfile.firstName || '';
+            document.getElementById('profile-surname').value = userProfile.surname || '';
+            document.getElementById('profile-dob').value = userProfile.dob || '';
+            document.getElementById('profile-gender').value = userProfile.gender || '';
+            document.getElementById('profile-mobile').value = userProfile.mobile || '';
+            document.getElementById('profile-email').value = (window.currentUser && window.currentUser.email) || '';
+            const pub = document.getElementById('profile-publish-section');
+            if (window.currentUser && window.currentUser.email === 'ploriv@ploriv.com') {
+                pub.classList.remove('hidden');
+            } else {
+                pub.classList.add('hidden');
+            }
+        };
+        window.closeAccountProfileModal = function() {
+            const m = document.getElementById('account-profile-modal');
+            if (m) m.classList.add('hidden');
+        };
+        window.saveAccountProfile = async function() {
+            userProfile = {
+                firstName: document.getElementById('profile-firstname').value.trim(),
+                surname: document.getElementById('profile-surname').value.trim(),
+                name: (document.getElementById('profile-firstname').value.trim() + ' ' + document.getElementById('profile-surname').value.trim()).trim(),
+                dob: document.getElementById('profile-dob').value || '',
+                gender: document.getElementById('profile-gender').value || '',
+                mobile: document.getElementById('profile-mobile').value.trim() || ''
+            };
+            if (window.currentUser && window.fbSaveUserData) {
+                await window.fbSaveUserData(window.currentUser.uid, { profile: userProfile });
+            }
+            if (window.saveUserDataToCloud) window.saveUserDataToCloud();
+            window.closeAccountProfileModal();
+            alertBox('Saved', 'Profile updated.');
+        };
+
+        window.veloxEditorCmd = function(cmd, val) {
+            const ed = document.getElementById('velox-body-editor');
+            if (!ed) return;
+            ed.focus();
+            if (cmd === 'insertParagraph') {
+                document.execCommand('insertParagraph', false, null);
+            } else if (cmd === 'insertLineBreak') {
+                document.execCommand('insertLineBreak', false, null);
+            } else {
+                document.execCommand(cmd, false, val || null);
+            }
+        };
+
+        window.veloxEditorFontSize = function(size) {
+            const ed = document.getElementById('velox-body-editor');
+            if (!ed) return;
+            ed.focus();
+            document.execCommand('fontSize', false, size);
+        };
+
+        window.publishVeloxContent = function() {
+            if (!window.currentUser || window.currentUser.email !== 'ploriv@ploriv.com') {
+                alertBox('Denied', 'Only the system publisher account can add Velox content.');
+                return;
+            }
+            const topic = document.getElementById('velox-topic').value.trim().toLowerCase();
+            const title = document.getElementById('velox-title').value.trim();
+            const ed = document.getElementById('velox-body-editor');
+            const html = ed ? ed.innerHTML.trim() : '';
+            const plain = ed ? (ed.innerText || ed.textContent || '').trim() : '';
+            if (!topic || !title || !plain) {
+                alertBox('Missing', 'Fill topic, title and body text.');
+                return;
+            }
+            // Store plain for search match + HTML for rich display
+            veloxSyncedContent[topic] = {
+                title: title,
+                summary: plain,
+                summaryHtml: html,
+                author: 'ploriv@ploriv.com',
+                syncedAt: new Date().toISOString(),
+                source: 'Ploriv Cloud'
+            };
+            logConsole('Velox content published: ' + topic);
+            document.getElementById('velox-topic').value = '';
+            document.getElementById('velox-title').value = '';
+            if (ed) ed.innerHTML = '';
+            const hidden = document.getElementById('velox-body');
+            if (hidden) hidden.value = '';
+            if (window.saveUserDataToCloud) window.saveUserDataToCloud();
+            alertBox('Saved', 'Formatted content is live in Velox search.');
+        };
+
+        function renderHistoryList() {
+            const container = document.getElementById('history-list-container');
+            if (!container) return;
+            let html = '';
+            historyData.forEach((h) => {
+                html += `
+                    <div class="p-3 bg-[#04070e] border border-indigo-500/20 rounded-2xl flex items-center justify-between">
+                        <div>
+                            <div class="text-sm font-bold text-white">${h.url}</div>
+                            <div class="text-xs text-slate-500">${h.timestamp}</div>
+                        </div>
+                        <button onclick="window.navigateTo('${h.url}'); window.closeHistoryModal();" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition">Visit</button>
+                    </div>
+                `;
+            });
+            container.innerHTML = html || '<div class="text-slate-500 text-sm py-6 text-center">No browsing history yet.</div>';
+        }
+
+        function renderBookmarksList() {
+            const container = document.getElementById('bookmarks-list-container');
+            if (!container) return;
+            let html = '';
+            bookmarksData.forEach((b) => {
+                html += `
+                    <div class="p-3 bg-[#04070e] border border-indigo-500/20 rounded-2xl flex items-center justify-between">
+                        <div>
+                            <div class="text-sm font-bold text-white">${b.title}</div>
+                            <div class="text-xs text-cyan-400 font-mono">${b.url}</div>
+                        </div>
+                        <button onclick="window.navigateTo('${b.url}'); window.closeBookmarksModal();" class="px-3.5 py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded-xl text-xs font-bold transition">Visit</button>
+                    </div>
+                `;
+            });
+            container.innerHTML = html || '<div class="text-slate-500 text-sm py-6 text-center">No bookmarks saved yet.</div>';
+        }
+
+        hostedSites['ploriv.host.com'] = {
+            title: 'Ploriv Host Studio',
+            type: 'code',
+            owner: 'Ploriv System',
+            plorivId: 'system@ploriv.com',
+            duration: 'Permanent',
+            render: function() {
+                return `
+                    <div class="w-full min-h-full bg-[#030712] text-slate-100 overflow-y-auto pb-20">
+                        <!-- Top Header Banner -->
+                        <div class="relative bg-gradient-to-r from-indigo-950 via-[#0a1128] to-[#040814] border-b border-indigo-500/20 py-12 px-6 lg:px-16 shadow-2xl overflow-hidden">
+                            <div class="absolute -right-20 -top-20 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                            <div class="absolute right-40 bottom-0 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                            
+                            <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-8 relative z-10">
+                                <div class="space-y-3">
+                                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-500/15 border border-indigo-500/30 text-cyan-300 text-xs font-extrabold tracking-wide">
+                                        <i class="fa-solid fa-wand-magic-sparkles text-cyan-400"></i> Professional Sovereign Studio
+                                    </div>
+                                    <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-white">Ploriv Host Studio</h1>
+                                    <p class="text-slate-300 text-sm md:text-base max-w-2xl font-medium leading-relaxed">
+                                        Manage your decentralized web applications, claim custom global domains, and deploy instantly across the network with enterprise-grade stability.
+                                    </p>
+                                </div>
+                                <div class="flex flex-col sm:flex-row gap-4 shrink-0 w-full md:w-auto">
+                                    <button onclick="window.openDomainRegistrarModal()" class="px-7 py-4 bg-gradient-to-r from-cyan-400 via-indigo-600 to-purple-600 hover:opacity-95 text-white font-bold rounded-2xl transition shadow-xl shadow-cyan-500/20 text-xs flex items-center justify-center gap-2.5 glow-accent">
+                                        <i class="fa-solid fa-globe text-base"></i> Buy & Claim Domain
+                                    </button>
+                                    <button onclick="window.openWebsiteHostModal()" class="px-7 py-4 bg-[#0d162a] hover:bg-[#152342] text-white font-bold rounded-2xl transition shadow-xl text-xs flex items-center justify-center gap-2.5 border border-indigo-500/30">
+                                        <i class="fa-solid fa-cloud-arrow-up text-base text-cyan-400"></i> Deploy Website / Host
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Main Content Container with spacious padding (non-congested) -->
+                        <div class="max-w-7xl mx-auto px-6 lg:px-16 pt-12 space-y-12">
+                            <!-- Quick Stat Cards -->
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                <div class="glass-panel border border-indigo-500/30 p-8 rounded-[2rem] shadow-xl flex items-center gap-6">
+                                    <div class="w-16 h-16 rounded-2xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-3xl border border-cyan-500/30 shrink-0">
+                                        <i class="fa-solid fa-server"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-3xl font-extrabold text-white" id="hosted-count-stat">0</div>
+                                        <div class="text-xs text-slate-400 font-semibold tracking-wide uppercase mt-1">Active Claimed Domains</div>
+                                    </div>
+                                </div>
+                                <div class="glass-panel border border-indigo-500/30 p-8 rounded-[2rem] shadow-xl flex items-center gap-6">
+                                    <div class="w-16 h-16 rounded-2xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-3xl border border-indigo-500/30 shrink-0">
+                                        <i class="fa-solid fa-shield-halved"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-3xl font-extrabold text-white">99.99%</div>
+                                        <div class="text-xs text-slate-400 font-semibold tracking-wide uppercase mt-1">Decentralized Uptime</div>
+                                    </div>
+                                </div>
+                                <div class="glass-panel border border-indigo-500/30 p-8 rounded-[2rem] shadow-xl flex items-center gap-6">
+                                    <div class="w-16 h-16 rounded-2xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-3xl border border-purple-500/30 shrink-0">
+                                        <i class="fa-solid fa-bolt"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-3xl font-extrabold text-white">Instant</div>
+                                        <div class="text-xs text-slate-400 font-semibold tracking-wide uppercase mt-1">One-Click Editing & Deploy</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Hosted Domains & Studio Workspace Section -->
+                            <div class="space-y-6">
+                                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-indigo-500/20 pb-6">
+                                    <div>
+                                        <h2 class="text-2xl font-extrabold text-white flex items-center gap-3">
+                                            <i class="fa-solid fa-layer-group text-cyan-400"></i> Your Deployed Domains & Websites
+                                        </h2>
+                                        <p class="text-xs text-slate-400 mt-1">Inspect, edit code, visit, or release your custom claimed domains.</p>
+                                    </div>
+                                    <button onclick="window.openWebsiteHostModal()" class="px-5 py-3 bg-indigo-600/20 hover:bg-indigo-600 text-indigo-200 hover:text-white rounded-2xl text-xs font-bold transition border border-indigo-500/40 flex items-center gap-2">
+                                        <i class="fa-solid fa-plus"></i> Add New Deployment
+                                    </button>
+                                </div>
+
+                                <div id="hosted-domains-list" class="grid grid-cols-1 gap-6"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        };
+
+        hostedSites['ploriv.private.tab.history.com'] = {
+            title: 'Ploriv Private Tab History Vault',
+            type: 'code',
+            owner: 'Ploriv System',
+            plorivId: 'system@ploriv.com',
+            duration: 'Permanent',
+            render: function() {
+                let htmlContent = '';
+                if (!window.currentUser) {
+                    htmlContent = `
+                        <div class="text-center py-12">
+                            <div class="w-16 h-16 bg-cyan-500/20 text-cyan-400 rounded-3xl flex items-center justify-center mx-auto mb-4 text-2xl border border-cyan-500/30">
+                                <i class="fa-solid fa-lock"></i>
+                            </div>
+                            <h2 class="text-xl font-bold text-white mb-2">Authentication Required</h2>
+                            <p class="text-sm text-slate-400 mb-6">Please sign in with your Ploriv Browser account to access, view, and delete your private tab browsing history.</p>
+                            <button onclick="window.openAuthModal()" class="px-6 py-3 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-2xl text-xs transition shadow-lg">Sign In Now</button>
+                        </div>
+                    `;
+                } else {
+                    let privList = '';
+                    if (privateHistoryData.length === 0) {
+                        privList = `<div class="text-slate-500 text-sm py-10 text-center">No private tab history recorded yet.</div>`;
+                    } else {
+                        privateHistoryData.forEach((item, idx) => {
+                            privList += `
+                                <div class="p-4 bg-[#04070e] border border-indigo-500/20 rounded-2xl flex items-center justify-between">
+                                    <div>
+                                        <div class="text-sm font-bold text-cyan-300 font-mono">${item.url}</div>
+                                        <div class="text-xs text-slate-500">${item.timestamp}</div>
+                                    </div>
+                                    <button onclick="window.deletePrivateHistoryItem(${idx})" class="px-3.5 py-1.5 bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white rounded-xl text-xs font-bold transition border border-rose-500/30">Delete</button>
+                                </div>
+                            `;
+                        });
+                    }
+                    htmlContent = `
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-lg font-bold text-white flex items-center gap-2"><i class="fa-solid fa-user-secret text-cyan-400"></i> Logged-in Private Tab History (${window.currentUser.email})</h2>
+                            <button onclick="window.clearAllPrivateHistory()" class="px-4 py-2 bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white rounded-xl text-xs font-bold transition border border-rose-500/30">Clear All Private History</button>
+                        </div>
+                        <div class="space-y-3">${privList}</div>
+                    `;
+                }
+                return `
+                    <div class="p-10 max-w-4xl mx-auto">
+                        <div class="bg-gradient-to-r from-cyan-950/70 via-indigo-950/60 to-purple-950/70 border border-cyan-500/40 p-8 rounded-3xl shadow-2xl mb-8">
+                            <h1 class="text-3xl font-extrabold text-white mb-2">Ploriv Private Tab History</h1>
+                            <p class="text-sm text-cyan-300 font-medium">Secure private browsing history vault for authorized Ploriv Browser accounts.</p>
+                        </div>
+                        <div class="bg-[#060a16] border border-indigo-500/30 rounded-3xl p-6 shadow-xl">
+                            ${htmlContent}
+                        </div>
+                    </div>
+                `;
+            }
+        };
+
+        function renderHostedDomainsList() {
+            const container = document.getElementById('hosted-domains-list');
+            const countStat = document.getElementById('hosted-count-stat');
+            
+            let customDomainsCount = 0;
+            Object.keys(hostedSites).forEach(d => {
+                if (d !== 'ploriv.host.com' && d !== 'ploriv.private.tab.history.com') {
+                    customDomainsCount++;
+                }
+            });
+            if (countStat) countStat.innerText = customDomainsCount;
+
+            if (!container) return;
+            let html = '';
+            Object.keys(hostedSites).forEach(domain => {
+                if (domain === 'ploriv.host.com' || domain === 'ploriv.private.tab.history.com') return;
+                const site = hostedSites[domain];
+                html += `
+                    <div class="glass-panel border border-indigo-500/30 p-8 rounded-[2rem] flex flex-col md:flex-row items-start md:items-center justify-between gap-6 hover:border-cyan-400 transition shadow-2xl">
+                        <div class="space-y-2">
+                            <div class="text-xs text-cyan-400 font-mono font-bold flex items-center gap-2"><i class="fa-solid fa-shield-check"></i> ${domain} (Claimed)</div>
+                            <h3 class="text-xl font-extrabold text-white">${site.title || domain}</h3>
+                            <div class="text-xs text-slate-400 font-medium">Owner: <span class="text-cyan-300 font-semibold">${site.owner}</span> (${site.plorivId}) | Duration: <span class="text-purple-300 font-bold">${site.duration}</span></div>
+                        </div>
+                        <div class="flex items-center gap-4 w-full md:w-auto justify-end shrink-0">
+                            <button onclick="window.openWebsiteEditModal('${domain}')" class="px-5 py-3 bg-cyan-600/20 hover:bg-cyan-600 text-cyan-300 hover:text-white rounded-2xl text-xs font-bold transition border border-indigo-500/30 flex items-center gap-2" title="Edit Website Code"><i class="fa-solid fa-pen-to-square"></i> Edit Code</button>
+                            <button onclick="window.navigateTo('${domain}')" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl text-xs font-bold transition shadow-lg flex items-center gap-2"><i class="fa-solid fa-arrow-up-right-from-square"></i> Visit Site</button>
+                            <button onclick="window.deleteHostedDomain('${domain}')" class="w-11 h-11 bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white rounded-2xl text-xs font-medium transition border border-rose-500/30 flex items-center justify-center" title="Release Domain"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html || `
+                <div class="text-slate-400 text-sm py-16 text-center glass-panel rounded-[2rem] border border-indigo-500/20 space-y-3">
+                    <div class="w-14 h-14 bg-indigo-600/20 text-indigo-400 rounded-2xl flex items-center justify-center mx-auto text-xl border border-indigo-500/30"><i class="fa-solid fa-globe"></i></div>
+                    <p class="font-semibold text-slate-300">No custom domains purchased yet.</p>
+                    <p class="text-xs text-slate-500">Click "Buy & Claim Domain" above to register and deploy your first website!</p>
+                </div>
+            `;
+        }
+
+        window.openDomainRegistrarModal = function() {
+            const m = document.getElementById('domain-registrar-modal');
+            if (m) {
+                m.classList.remove('hidden');
+                const ownerInput = document.getElementById('reg-owner-name');
+                const plorivIdInput = document.getElementById('reg-owner-plorivid');
+                if (ownerInput && window.currentUser && !ownerInput.value) {
+                    ownerInput.value = window.currentUser.email.split('@')[0];
+                }
+                if (plorivIdInput && window.currentUser && !plorivIdInput.value) {
+                    plorivIdInput.value = window.currentUser.email;
+                }
+            }
+        };
+        window.closeDomainRegistrarModal = function() {
+            const m = document.getElementById('domain-registrar-modal');
+            if (m) m.classList.add('hidden');
+        };
+
+        window.openWebsiteHostModal = function() {
+            const m = document.getElementById('website-host-modal');
+            if (m) {
+                m.classList.remove('hidden');
+                document.getElementById('host-mode-action').value = 'deploy';
+                document.getElementById('host-modal-title').innerText = 'Website Host Studio';
+                document.getElementById('host-modal-subtitle').innerText = 'Deploy code or upload files to your claimed domains';
+                document.getElementById('host-submit-btn').innerHTML = '<i class="fa-solid fa-globe"></i> Deploy Website to Domain';
+                const select = document.getElementById('host-domain-select');
+                select.disabled = false;
+                if (select) {
+                    let opts = '<option value="">-- Choose your domain --</option>';
+                    Object.keys(hostedSites).forEach(d => {
+                        if (d !== 'ploriv.host.com' && d !== 'ploriv.private.tab.history.com') {
+                            opts += `<option value="${d}">${d} (${hostedSites[d].title || 'Hosted App'})</option>`;
+                        }
+                    });
+                    select.innerHTML = opts;
+                }
+            }
+        };
+
+        window.openWebsiteEditModal = function(domain) {
+            const site = hostedSites[domain];
+            if (!site) return;
+            const m = document.getElementById('website-host-modal');
+            if (m) {
+                m.classList.remove('hidden');
+                document.getElementById('host-mode-action').value = 'edit';
+                document.getElementById('host-modal-title').innerText = `Edit Website: ${domain}`;
+                document.getElementById('host-modal-subtitle').innerText = 'Modify code or title for your claimed domain';
+                document.getElementById('host-submit-btn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save & Update Website';
+                
+                document.getElementById('host-title-input').value = site.title || domain;
+                document.getElementById('host-content-input').value = site.rawCode || '';
+                document.getElementById('host-image-url').value = site.imageUrl || '';
+                
+                const select = document.getElementById('host-domain-select');
+                select.innerHTML = `<option value="${domain}">${domain}</option>`;
+                select.value = domain;
+                select.disabled = true;
+            }
+        };
+
+        window.closeWebsiteHostModal = function() {
+            const m = document.getElementById('website-host-modal');
+            if (m) m.classList.add('hidden');
+        };
+
+        window.toggleHostSourceType = function() {
+            const type = document.getElementById('host-source-type').value;
+            const codeContainer = document.getElementById('host-code-container');
+            const fileContainer = document.getElementById('host-file-container');
+            if (type === 'file') {
+                codeContainer.classList.add('hidden');
+                fileContainer.classList.remove('hidden');
+            } else {
+                codeContainer.classList.remove('hidden');
+                fileContainer.classList.add('hidden');
+            }
+        };
+
+        let uploadedFileContent = '';
+        window.handleHostFileSelected = function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            document.getElementById('host-file-name-display').innerText = `Selected: ${file.name}`;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                uploadedFileContent = e.target.result;
+                logConsole('File loaded successfully for hosting: ' + file.name);
+            };
+            reader.readAsText(file);
+        };
+
+        window.purchaseCustomDomain = function() {
+            const rawDomainName = document.getElementById('reg-domain-name').value.trim().toLowerCase();
+            const tld = document.getElementById('reg-domain-tld').value;
+            const durationVal = document.getElementById('reg-duration-val').value;
+            const durationUnit = document.getElementById('reg-duration-unit').value;
+            const ownerName = document.getElementById('reg-owner-name').value.trim();
+            const plorivId = document.getElementById('reg-owner-plorivid').value.trim();
+            const passcode = document.getElementById('reg-passcode').value;
+            const errDiv = document.getElementById('reg-error-msg');
+
+            if (!rawDomainName || !ownerName || !plorivId || !passcode) {
+                errDiv.innerText = "Please fill in all domain purchasing and ownership claim details.";
+                errDiv.classList.remove('hidden');
+                return;
+            }
+
+            const cleanName = rawDomainName.replace(/\./g, '');
+            const fullDomain = cleanName.endsWith(tld) ? cleanName : (cleanName + tld);
+
+            if (hostedSites[fullDomain] && fullDomain !== 'ploriv.host.com') {
+                errDiv.innerText = `Domain "${fullDomain}" is already purchased and claimed!`;
+                errDiv.classList.remove('hidden');
+                return;
+            }
+
+            errDiv.classList.add('hidden');
+            const durationStr = `${durationVal} ${durationUnit}`;
+
+            hostedSites[fullDomain] = {
+                title: fullDomain,
+                type: 'code',
+                owner: ownerName,
+                plorivId: plorivId,
+                duration: durationStr,
+                imageUrl: '',
+                rawCode: `<div class="p-10 max-w-3xl mx-auto text-center"><h1 class="text-3xl font-bold text-white mb-3">${fullDomain}</h1><p class="text-slate-300 text-sm">Domain successfully claimed by ${ownerName}. Edit and deploy your website using the Host Studio!</p></div>`,
+                render: function() {
+                    return `<div class="w-full h-full overflow-y-auto bg-[#030712]">${this.rawCode}</div>`;
+                }
+            };
+
+            logConsole(`Custom domain successfully purchased & claimed: ${fullDomain} by ${ownerName}`);
+            window.closeDomainRegistrarModal();
+            alertBox('Domain Purchased', `Domain "${fullDomain}" successfully bought and claimed!`);
+            if (window.saveUserDataToCloud) window.saveUserDataToCloud();
+            window.openWebsiteHostModal();
+        };
+
+        window.deployHostedWebsite = function() {
+            const domain = document.getElementById('host-domain-select').value;
+            const title = document.getElementById('host-title-input').value.trim();
+            const imageUrl = document.getElementById('host-image-url').value.trim();
+            const sourceType = document.getElementById('host-source-type').value;
+            const modeAction = document.getElementById('host-mode-action').value;
+            const errDiv = document.getElementById('host-error-msg');
+
+            if (!domain || !title) {
+                errDiv.innerText = "Please select your domain and enter a website title.";
+                errDiv.classList.remove('hidden');
+                return;
+            }
+
+            let finalCode = '';
+            if (sourceType === 'file' && uploadedFileContent) {
+                finalCode = uploadedFileContent;
+            } else {
+                finalCode = document.getElementById('host-content-input').value.trim();
+                if (!finalCode && hostedSites[domain] && hostedSites[domain].rawCode) {
+                    finalCode = hostedSites[domain].rawCode;
+                }
+                if (!finalCode) {
+                    errDiv.innerText = "Please enter your website code or markup.";
+                    errDiv.classList.remove('hidden');
+                    return;
+                }
+            }
+
+            errDiv.classList.add('hidden');
+            let renderedHtml = `<div class="w-full h-full overflow-y-auto bg-[#030712]">${finalCode}</div>`;
+
+            if (hostedSites[domain]) {
+                hostedSites[domain].title = title;
+                hostedSites[domain].rawCode = finalCode;
+                hostedSites[domain].imageUrl = imageUrl || '';
+                hostedSites[domain].owner = hostedSites[domain].owner || (window.currentUser && window.currentUser.email) || 'Host';
+                hostedSites[domain].render = function() {
+                    const imgBanner = this.imageUrl
+                        ? `<div class="w-full max-h-64 overflow-hidden bg-black"><img src="${this.imageUrl}" alt="" class="w-full max-h-64 object-cover" style="filter:none;" onerror="this.parentElement.style.display='none'"></div>`
+                        : '';
+                    return `<div class="w-full h-full overflow-y-auto bg-[#030712]">${imgBanner}${this.rawCode}</div>`;
+                };
+            }
+
+            // Public catalog so others can find this site + image in search
+            publishPublicHostedSite(domain, {
+                title: title,
+                imageUrl: imageUrl || '',
+                owner: (window.currentUser && window.currentUser.email) || hostedSites[domain].owner || 'Host',
+                rawCode: finalCode,
+                type: 'code',
+                duration: hostedSites[domain].duration || ''
+            });
+
+            logConsole(`Website ${modeAction === 'edit' ? 'updated' : 'deployed'} successfully to domain: ${domain}`);
+            window.closeWebsiteHostModal();
+            if (window.saveUserDataToCloud) window.saveUserDataToCloud();
+            window.navigateTo(domain);
+        };
+
+        function publishPublicHostedSite(domain, meta) {
+            try {
+                const map = JSON.parse(localStorage.getItem('ploriv_public_sites') || '{}');
+                map[domain] = Object.assign({}, meta, { updatedAt: new Date().toISOString() });
+                localStorage.setItem('ploriv_public_sites', JSON.stringify(map));
+            } catch (e) {}
+            if (typeof window.fbPublishPublicSite === 'function') {
+                window.fbPublishPublicSite(domain, meta);
+            }
+            mergePublicSitesIntoHosted();
+        }
+
+        function mergePublicSitesIntoHosted() {
+            try {
+                const map = JSON.parse(localStorage.getItem('ploriv_public_sites') || '{}');
+                Object.keys(map).forEach(domain => {
+                    if (domain === 'ploriv.host.com' || domain === 'ploriv.private.tab.history.com') return;
+                    const s = map[domain];
+                    if (!s) return;
+                    const existing = hostedSites[domain];
+                    hostedSites[domain] = {
+                        title: s.title || (existing && existing.title) || domain,
+                        type: 'code',
+                        owner: s.owner || 'Host',
+                        plorivId: (existing && existing.plorivId) || '',
+                        duration: s.duration || (existing && existing.duration) || '',
+                        imageUrl: s.imageUrl || (existing && existing.imageUrl) || '',
+                        rawCode: s.rawCode || (existing && existing.rawCode) || '<div class="p-10 text-white">Site online</div>',
+                        render: function() {
+                            const imgBanner = this.imageUrl
+                                ? `<div class="w-full max-h-64 overflow-hidden bg-black"><img src="${this.imageUrl}" alt="" class="w-full max-h-64 object-cover" style="filter:none;" onerror="this.parentElement.style.display='none'"></div>`
+                                : '';
+                            return `<div class="w-full h-full overflow-y-auto bg-[#030712]">${imgBanner}${this.rawCode}</div>`;
+                        }
+                    };
+                });
+            } catch (e) {}
+        }
+
+        window.deleteHostedDomain = function(domain) {
+            if (confirm('Are you sure you want to release domain "' + domain + '"?')) {
+                delete hostedSites[domain];
+                try {
+                    const map = JSON.parse(localStorage.getItem('ploriv_public_sites') || '{}');
+                    delete map[domain];
+                    localStorage.setItem('ploriv_public_sites', JSON.stringify(map));
+                } catch (e) {}
+                if (typeof window.fbDeletePublicSite === 'function') window.fbDeletePublicSite(domain);
+                logConsole('Released domain: ' + domain);
+                if (window.saveUserDataToCloud) window.saveUserDataToCloud();
+                renderActivePage();
+            }
+        };
+
+        let dynamicKnowledgeBase = {};
+
+        function persistLockedTabs() {
+            try {
+                const locked = tabs.filter(t => t.locked).map(t => ({
+                    id: t.id, title: t.title, url: t.url, isPrivate: !!t.isPrivate,
+                    history: t.history || [t.url], historyIndex: t.historyIndex || 0, locked: true
+                }));
+                localStorage.setItem('ploriv_locked_tabs', JSON.stringify(locked));
+            } catch (e) {}
+        }
+
+        function restoreLockedTabs() {
+            try {
+                const raw = localStorage.getItem('ploriv_locked_tabs');
+                if (!raw) return [];
+                return JSON.parse(raw) || [];
+            } catch (e) { return []; }
+        }
+
+        window.toggleTabLock = function(tabId, event) {
+            if (event) event.stopPropagation();
+            const tab = tabs.find(t => t.id === tabId);
+            if (!tab) return;
+            tab.locked = !tab.locked;
+            persistLockedTabs();
+            renderTabs();
+            if (tab.locked) alertBox('Tab locked', 'This tab stays until you unlock it.');
+        };
+
+        window.createNewTab = function(url = null, isPrivate = false) {
+            const targetUrl = url !== null ? url : settings.homepage;
+            const newTab = {
+                id: 'tab_' + Math.random().toString(36).substr(2, 9),
+                title: isPrivate ? 'Private Tab' : 'New Tab',
+                url: targetUrl,
+                isPrivate: isPrivate,
+                locked: false,
+                history: [targetUrl],
+                historyIndex: 0
+            };
+            tabs.push(newTab);
+            switchTab(newTab.id);
+        };
+
+        function closeTab(tabId, event) {
+            if (event) event.stopPropagation();
+            const tab = tabs.find(t => t.id === tabId);
+            if (tab && tab.locked) {
+                alertBox('Tab locked', 'Unlock this tab first to close it.');
+                return;
+            }
+            const index = tabs.findIndex(t => t.id === tabId);
+            if (index !== -1) {
+                tabs.splice(index, 1);
+                persistLockedTabs();
+                if (tabs.length === 0) {
+                    window.createNewTab(settings.homepage, false);
+                } else if (activeTabId === tabId) {
+                    switchTab(tabs[Math.max(0, index - 1)].id);
+                } else {
+                    renderTabs();
+                }
+            }
+        }
+
+        function switchTab(tabId) {
+            activeTabId = tabId;
+            renderTabs();
+            renderActivePage();
+        }
+
+        function renderTabs() {
+            const container = document.getElementById('tabs-container');
+            if (!container) return;
+            let html = '';
+            tabs.forEach((tab) => {
+                const isActive = tab.id === activeTabId;
+                let displayTitle = tab.title;
+                if (tab.url === 'home') displayTitle = tab.isPrivate ? 'Private' : 'New Tab';
+                else if (tab.url.startsWith('ploriv://search')) displayTitle = 'Search';
+                else if (hostedSites[tab.url]) displayTitle = hostedSites[tab.url].title || tab.url;
+                else displayTitle = tab.url;
+
+                html += `
+                    <div onclick="switchTab('${tab.id}')" class="tab-chip group flex items-center gap-2 px-3 h-8 max-w-[200px] min-w-[100px] text-[12px] font-medium cursor-pointer ${isActive ? 'active' : ''}" style="margin-bottom: -1px;">
+                        <i class="fa-solid ${tab.locked ? 'fa-lock' : (tab.isPrivate ? 'fa-user-secret' : 'fa-globe')} text-[10px] opacity-60 shrink-0" style="${tab.locked ? 'color:var(--accent)' : ''}"></i>
+                        <span class="truncate flex-1 text-left">${displayTitle}</span>
+                        <button onclick="window.toggleTabLock('${tab.id}', event)" class="opacity-0 group-hover:opacity-100 w-4 h-4 rounded flex items-center justify-center hover:bg-white/10 text-[10px] shrink-0" title="${tab.locked ? 'Unlock tab' : 'Lock tab'}">
+                            <i class="fa-solid ${tab.locked ? 'fa-lock-open' : 'fa-lock'}"></i>
+                        </button>
+                        <button onclick="closeTab('${tab.id}', event)" class="opacity-0 group-hover:opacity-100 w-4 h-4 rounded flex items-center justify-center hover:bg-white/10 text-[10px] shrink-0" title="Close">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                `;
+            });
+            html += `
+                <button onclick="window.createNewTab('home', false)" class="self-center mb-1.5 ml-0.5 w-7 h-7 rounded-md text-[var(--muted)] hover:text-[#87CEEB] hover:bg-sky-500/10 flex items-center justify-center shrink-0" title="New Tab">
+                    <i class="fa-solid fa-plus text-[12px]"></i>
+                </button>
+            `;
+            container.innerHTML = html;
+        }
+
+        function getActiveTab() {
+            return tabs.find(t => t.id === activeTabId);
+        }
+
+        window.navigateTo = function(url) {
+            const tab = getActiveTab();
+            if (!tab) return;
+
+            let queryStr = url.trim();
+            let finalUrl = '';
+
+            if (queryStr.toLowerCase().startsWith('ploriv://')) {
+                queryStr = queryStr.substring(9);
+            }
+            if (queryStr.toLowerCase().startsWith('https://')) {
+                queryStr = queryStr.substring(8);
+            }
+            if (queryStr.toLowerCase().startsWith('http://')) {
+                queryStr = queryStr.substring(7);
+            }
+
+            const lowerClean = queryStr.toLowerCase();
+
+            const targetVault = 'ploriv.private.tab.history.com';
+            if (lowerClean === targetVault || lowerClean === 'www.' + targetVault) {
+                finalUrl = targetVault;
+            } else if (lowerClean.startsWith('http://') || lowerClean.startsWith('https://')) {
+                finalUrl = lowerClean;
+            } else if (hostedSites[lowerClean]) {
+                finalUrl = lowerClean;
+            } else {
+                const foundKey = Object.keys(hostedSites).find(k => k.toLowerCase() === lowerClean);
+                if (foundKey) {
+                    finalUrl = foundKey;
+                } else if (lowerClean.includes('.') && !lowerClean.includes(' ')) {
+                    finalUrl = lowerClean.startsWith('www.') ? lowerClean : ('www.' + lowerClean);
+                } else if (lowerClean === 'home') {
+                    finalUrl = 'home';
+                } else {
+                    finalUrl = 'ploriv://search?q=' + encodeURIComponent(queryStr);
+                }
+            }
+
+            tab.url = finalUrl;
+            tab.history = tab.history.slice(0, tab.historyIndex + 1);
+            tab.history.push(finalUrl);
+            tab.historyIndex = tab.history.length - 1;
+
+            addToHistory(finalUrl, tab.isPrivate);
+            renderActivePage();
+        };
+
+        function addToHistory(url, isPrivate) {
+            const timestamp = new Date().toLocaleString();
+            if (isPrivate) {
+                privateHistoryData.push({ url, timestamp });
+            } else {
+                historyData.push({ url, timestamp });
+            }
+        }
+
+        function toggleBookmarkCurrent() {
+            const tab = getActiveTab();
+            if (!tab || tab.url === 'home') return;
+            const existingIdx = bookmarksData.findIndex(b => b.url === tab.url);
+            const starBtn = document.getElementById('bookmark-star-btn');
+            if (existingIdx !== -1) {
+                bookmarksData.splice(existingIdx, 1);
+                if (starBtn) starBtn.innerHTML = '<i class="fa-regular fa-star"></i>';
+                alertBox('Bookmark Removed', 'Page removed from bookmarks.');
+            } else {
+                let title = tab.url;
+                if (hostedSites[tab.url]) title = hostedSites[tab.url].title || tab.url;
+                bookmarksData.push({ url: tab.url, title: title });
+                if (starBtn) starBtn.innerHTML = '<i class="fa-solid fa-star text-amber-400"></i>';
+                alertBox('Bookmark Added', 'Page saved to bookmarks successfully.');
+            }
+            if (window.saveUserDataToCloud) window.saveUserDataToCloud();
+        }
+
+        function updateBookmarkStar(url) {
+            const starBtn = document.getElementById('bookmark-star-btn');
+            if (!starBtn) return;
+            const exists = bookmarksData.some(b => b.url === url);
+            if (exists) {
+                starBtn.innerHTML = '<i class="fa-solid fa-star text-amber-400"></i>';
+            } else {
+                starBtn.innerHTML = '<i class="fa-regular fa-star"></i>';
+            }
+        }
+
+        window.handleUrlKeydown = function(event) {
+            if (event.key === 'Enter') {
+                const val = document.getElementById('url-input').value;
+                window.navigateTo(val);
+            }
+        };
+
+        window.goBack = function() {
+            const tab = getActiveTab();
+            if (!tab || tab.historyIndex <= 0) return;
+            tab.historyIndex--;
+            tab.url = tab.history[tab.historyIndex];
+            renderActivePage();
+        };
+
+        window.goForward = function() {
+            const tab = getActiveTab();
+            if (!tab || tab.historyIndex >= tab.history.length - 1) return;
+            tab.historyIndex++;
+            tab.url = tab.history[tab.historyIndex];
+            renderActivePage();
+        };
+
+        window.reloadPage = function() {
+            renderActivePage();
+        };
+
+        function renderActivePage() {
+            const tab = getActiveTab();
+            if (!tab) return;
+
+            const urlInput = document.getElementById('url-input');
+            if (urlInput) {
+                if (tab.url.startsWith('ploriv://search')) {
+                    const qParam = new URLSearchParams(tab.url.split('?')[1]).get('q') || '';
+                    urlInput.value = qParam;
+                } else {
+                    urlInput.value = tab.url;
+                }
+            }
+
+            const backBtn = document.getElementById('back-btn');
+            const forwardBtn = document.getElementById('forward-btn');
+            if (backBtn) backBtn.disabled = tab.historyIndex <= 0;
+            if (forwardBtn) forwardBtn.disabled = tab.historyIndex >= tab.history.length - 1;
+
+            const viewport = document.getElementById('viewport-container');
+            if (!viewport) return;
+
+            updateBookmarkStar(tab.url);
+
+            if (tab.url === 'home') {
+                viewport.innerHTML = renderHomePage(tab.isPrivate);
+            } else if (tab.url.startsWith('ploriv://search')) {
+                const queryParam = new URLSearchParams(tab.url.split('?')[1]).get('q') || '';
+                viewport.innerHTML = renderSearchResults(queryParam);
+            } else if (hostedSites[tab.url]) {
+                viewport.innerHTML = hostedSites[tab.url].render();
+                if (tab.url === 'ploriv.host.com') {
+                    setTimeout(renderHostedDomainsList, 50);
+                }
+            } else {
+                viewport.innerHTML = `
+                    <div class="w-full h-full flex items-center justify-center p-8" style="background: var(--bg);">
+                        <div class="max-w-md w-full rounded-2xl p-6 border text-center" style="background: var(--surface); border-color: var(--border);">
+                            <div class="text-[12px] font-mono mb-3" style="color: #60a5fa;">${tab.url}</div>
+                            <h1 class="text-lg font-semibold mb-2" style="color: var(--text);">Page preview</h1>
+                            <p class="text-sm" style="color: var(--muted);">Opened through Ploriv network.</p>
+                        </div>
+                    </div>
+                `;
+            }
+            renderTabs();
+            if (window.saveUserDataToCloud) window.saveUserDataToCloud();
+        }
+
+        function renderHomePage(isPrivate) {
+            const popular = [
+                { label: 'India', q: 'india', icon: 'fa-globe-asia', color: '#fb923c' },
+                { label: 'Fukra', q: 'fukra insaan', icon: 'fa-video', color: '#fdba74' },
+                { label: '7th largest', q: '7th largest country', icon: 'fa-map', color: '#f97316' }
+            ];
+            const tiles = popular.map(p => `
+                    <button type="button" class="shortcut-tile" onclick="window.navigateTo('${p.q}')">
+                        <span class="shortcut-icon" style="color:${p.color};"><i class="fa-solid ${p.icon}"></i></span>
+                        <span class="text-[11px] font-medium truncate w-full text-center">${p.label}</span>
+                    </button>
+                `).join('');
+
+            return `
+                <div class="w-full h-full flex flex-col overflow-y-auto relative" style="background: linear-gradient(165deg, #0c0a09 0%, #1c1410 40%, #2a1208 70%, #0c0a09 100%);">
+                    <div class="absolute top-4 right-4 z-10">
+                        <button onclick="window.createNewTab('home', false)" class="w-10 h-10 rounded-full flex items-center justify-center border glow-accent" style="background: var(--surface); border-color: var(--border); color: var(--heading);" title="New Tab">
+                            <i class="fa-solid fa-plus text-sm"></i>
+                        </button>
+                    </div>
+                    <div class="flex-1 flex flex-col items-center justify-center px-6 py-10">
+                        <div class="w-full max-w-xl text-center">
+                            <div class="flex items-center justify-center gap-3 mb-6">
+                                <div class="ploriv-logo glow-effect" title="Ploriv">P</div>
+                            </div>
+                            <h1 class="text-[28px] md:text-[34px] font-semibold tracking-tight mb-2 shine-title">${isPrivate ? 'Private browsing' : 'Ploriv Web'}</h1>
+                            <p class="text-[13px] mb-8" style="color: var(--muted);">${isPrivate ? 'This session stays private' : 'Velox Search Engine'}</p>
+                            <div class="flex items-center rounded-2xl px-5 py-3.5 max-w-xl mx-auto border mb-8 glow-accent" style="background: var(--surface); border-color: var(--border);">
+                                <i class="fa-solid fa-magnifying-glass text-sm mr-3" style="color: var(--accent);"></i>
+                                <input type="text" id="home-search-input" autofocus onkeydown="if(event.key==='Enter') window.navigateTo(this.value)" class="w-full bg-transparent outline-none text-[15px] font-normal placeholder:text-[var(--muted)]" style="color: var(--text);" placeholder="Search with Velox…">
+                            </div>
+                            <p class="text-[11px] font-medium tracking-wide uppercase mb-4" style="color: var(--muted);">Top searches</p>
+                            <div class="flex flex-wrap justify-center gap-5 max-w-sm mx-auto">
+                                ${tiles}
+                            </div>
+                            <div class="flex flex-wrap justify-center gap-3 mt-8">
+                                <button onclick="window.navigateTo('ploriv.host.com')" class="px-4 py-2 rounded-full text-[12px] font-medium border" style="background: var(--surface); color: var(--text); border-color: var(--border);">Host Studio</button>
+                                <button onclick="window.navigateTo('ploriv.private.tab.history.com')" class="px-4 py-2 rounded-full text-[12px] font-medium border" style="background: var(--surface); color: var(--text); border-color: var(--border);">Private History</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="shrink-0 px-5 py-4 flex items-center gap-3 border-t" style="border-color: var(--border); background: rgba(12,10,9,0.85);">
+                        <div class="ploriv-logo" style="width:28px;height:28px;font-size:12px;border-radius:8px;">P</div>
+                        <span class="text-[13px] font-semibold shine-title">Ploriv Web</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderSearchResults(query) {
+            const lowerQuery = query.toLowerCase().trim();
+            let veloxHits = [];
+            let matchedArticles = [];
+
+            Object.keys(veloxSyncedContent).forEach(key => {
+                const entry = { ...veloxSyncedContent[key], _key: key };
+                // Key match only if query is contained in key or key in query as whole phrase — not partial "ploriv"
+                const keyOk = key === lowerQuery || key.includes(lowerQuery) || (lowerQuery.length >= 4 && lowerQuery.includes(key));
+                if (veloxTextMatches(lowerQuery, entry) || keyOk) {
+                    veloxHits.push(entry);
+                }
+            });
+
+            const seenTitles = new Set();
+            veloxHits = veloxHits.filter(e => {
+                if (seenTitles.has(e.title)) return false;
+                seenTitles.add(e.title);
+                return true;
+            });
+
+            Object.keys(hostedSites).forEach(domain => {
+                const site = hostedSites[domain];
+                if (domain === 'ploriv.host.com' || domain === 'ploriv.private.tab.history.com') return;
+                const titleL = (site.title || '').toLowerCase();
+                const ownerL = (site.owner || '').toLowerCase();
+                if (
+                    domain.toLowerCase().includes(lowerQuery) ||
+                    titleL.includes(lowerQuery) ||
+                    lowerQuery.includes(titleL) ||
+                    ownerL.includes(lowerQuery) ||
+                    veloxTextMatches(lowerQuery, { title: site.title, summary: domain + ' ' + (site.owner || '') })
+                ) {
+                    matchedArticles.push({
+                        title: site.title || domain,
+                        url: domain,
+                        snippet: site.owner ? `Hosted by ${site.owner}` : 'Hosted on Ploriv',
+                        imageUrl: site.imageUrl || ''
+                    });
+                }
+            });
+
+            const overview = buildVeloxOverview(query, veloxHits);
+
+            let siteCards = '';
+            matchedArticles.forEach(art => {
+                const siteImg = (hostedSites[art.url] && hostedSites[art.url].imageUrl) ? hostedSites[art.url].imageUrl : (art.imageUrl || '');
+                const img = siteImg
+                    ? `<div class="w-full aspect-[16/9] rounded-2xl overflow-hidden mb-4 bg-[#0a0a0a] border border-white/10"><img src="${escapeHtml(siteImg)}" alt="${escapeHtml(art.title)}" class="w-full h-full object-cover" style="filter:none !important;mix-blend-mode:normal !important;" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null;this.parentElement.innerHTML='<div class=\\'flex items-center justify-center h-full text-xs text-slate-500\\'>Image unavailable</div>'"></div>`
+                    : '';
+                siteCards += `
+                    <button onclick="window.navigateTo('${art.url}')" class="w-full text-left rounded-2xl p-4 border transition hover:border-sky-500/30" style="background:#121820; border-color:rgba(135,206,235,0.15);">
+                        ${img}
+                        <div class="text-[12px] mb-1 truncate" style="color:#87CEEB;">${escapeHtml(art.url)}</div>
+                        <div class="text-[18px] font-semibold mb-1" style="color:#87CEEB;">${escapeHtml(art.title)}</div>
+                        <div class="text-[14px]" style="color:#ffffff;">${escapeHtml(art.snippet || '')}</div>
+                    </button>
+                `;
+            });
+
+            if (overview || siteCards) {
+                return `
+                    <div class="w-full min-h-full" style="background:#0c1018;">
+                        <div class="max-w-2xl mx-auto px-6 py-14 md:py-20">
+                            <p class="text-[12px] font-medium mb-3 tracking-wide" style="color:#86efac;">Velox Search</p>
+                            ${overview ? `
+                            <h1 class="text-[28px] md:text-[38px] font-semibold tracking-tight leading-[1.15] mb-6" style="color:#87CEEB; letter-spacing:-0.02em;">${escapeHtml(overview.headline)}</h1>
+                            <div class="mb-10">${overview.bodyHtml || formatVeloxAnswerHtml(overview.body, query)}</div>
+                            ` : `
+                            <h1 class="text-[22px] font-semibold mb-8" style="color:#87CEEB;">Results for “${escapeHtml(query)}”</h1>
+                            `}
+                            ${siteCards ? `<p class="text-[12px] font-medium mb-3 tracking-wide" style="color:#86efac;">Websites</p><div class="grid gap-4">${siteCards}</div>` : ''}
+                        </div>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="w-full min-h-full flex items-center justify-center px-6" style="background:#0c1018;">
+                    <div class="max-w-md text-center">
+                        <p class="text-[12px] font-medium mb-3" style="color:#86efac;">Velox Search</p>
+                        <h1 class="text-[22px] font-semibold mb-3" style="color:#87CEEB;">No results</h1>
+                        <p class="text-[15px] leading-relaxed" style="color:#ffffff;">Nothing matched “${query}”.</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        window.triggerDownload = function(filename, content) {
+            const element = document.createElement('a');
+            const file = new Blob([content], {type: 'text/plain'});
+            element.href = URL.createObjectURL(file);
+            element.download = filename;
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+            downloadsData.unshift({ filename: filename, timestamp: new Date().toLocaleString() });
+            alertBox('Download Complete', `File "${filename}" downloaded successfully.`);
+            if (window.saveUserDataToCloud) window.saveUserDataToCloud();
+        };
+
+        function alertBox(title, message) {
+            const modal = document.createElement('div');
+            modal.className = "fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] flex items-center justify-center p-4";
+            modal.innerHTML = `
+                <div class="w-full max-w-sm p-6 shadow-2xl text-center rounded-2xl border" style="background: var(--surface); border-color: var(--border);">
+                    <h3 class="font-semibold mb-2 text-[15px]" style="color: var(--text);">${title}</h3>
+                    <p class="text-sm mb-5" style="color: var(--muted);">${message}</p>
+                    <button onclick="this.closest('.fixed').remove()" class="w-full py-2.5 bg-white text-black font-semibold rounded-xl text-sm hover:bg-slate-100 transition">OK</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        window.onUserAuthenticated = async function(uid) {
+            logConsole('User authenticated: ' + uid);
+            updateSettingsAccountUI();
+            const cloudData = await window.fbLoadUserData(uid);
+            if (cloudData) {
+                if (cloudData.profile) userProfile = cloudData.profile;
+                if (cloudData.bookmarks) bookmarksData = cloudData.bookmarks;
+                if (cloudData.history) historyData = cloudData.history;
+                if (cloudData.privateHistory) privateHistoryData = cloudData.privateHistory;
+                if (cloudData.veloxSyncedContent) {
+                    Object.keys(cloudData.veloxSyncedContent).forEach(k => {
+                        veloxSyncedContent[k] = cloudData.veloxSyncedContent[k];
+                    });
+                }
+                if (cloudData.hostedSites) {
+                    Object.keys(cloudData.hostedSites).forEach(d => {
+                        const s = cloudData.hostedSites[d];
+                        hostedSites[d] = {
+                            title: s.title,
+                            type: s.type,
+                            owner: s.owner,
+                            plorivId: s.plorivId,
+                            duration: s.duration,
+                            imageUrl: s.imageUrl || '',
+                            rawCode: s.rawCode,
+                            render: function() {
+                                return `<div class="w-full h-full overflow-y-auto bg-[#030712]">${this.rawCode}</div>`;
+                            }
+                        };
+                    });
+                }
+                if (cloudData.settings) settings = Object.assign({}, settings, cloudData.settings);
+                renderActivePage();
+            }
+        };
+
+        window.onUserSignedOut = function() {
+            logConsole('User signed out.');
+            userProfile = {};
+            updateSettingsAccountUI();
+        };
+
+        window.saveUserDataToCloud = async function() {
+            if (!window.currentUser) return;
+            const serializableSites = {};
+            Object.keys(hostedSites).forEach(d => {
+                const s = hostedSites[d];
+                serializableSites[d] = {
+                    title: s.title,
+                    type: s.type,
+                    owner: s.owner,
+                    plorivId: s.plorivId,
+                    duration: s.duration,
+                    imageUrl: s.imageUrl || '',
+                    rawCode: s.rawCode
+                };
+            });
+            const dataToSave = {
+                profile: userProfile,
+                bookmarks: bookmarksData,
+                history: historyData,
+                privateHistory: privateHistoryData,
+                hostedSites: serializableSites,
+                settings: settings,
+                veloxSyncedContent: (window.currentUser.email === 'ploriv@ploriv.com') ? veloxSyncedContent : undefined
+            };
+            await window.fbSaveUserData(window.currentUser.uid, dataToSave);
+        };
+
+        function bootPloriv() {
+            try {
+                if (tabs && tabs.length === 0) {
+                    const locked = restoreLockedTabs();
+                    if (locked.length) {
+                        locked.forEach(t => {
+                            tabs.push({
+                                id: t.id || ('tab_' + Math.random().toString(36).substr(2, 9)),
+                                title: t.title || 'Locked',
+                                url: t.url || 'home',
+                                isPrivate: !!t.isPrivate,
+                                locked: true,
+                                history: t.history || [t.url || 'home'],
+                                historyIndex: t.historyIndex || 0
+                            });
+                        });
+                        switchTab(tabs[0].id);
+                    } else {
+                        window.createNewTab('home', false);
+                    }
+                }
+                if (typeof mergePublicSitesIntoHosted === 'function') mergePublicSitesIntoHosted();
+                if (typeof window.fbLoadPublicSites === 'function') window.fbLoadPublicSites();
+                if (typeof updateSettingsAccountUI === 'function') updateSettingsAccountUI();
+                if (typeof logConsole === 'function') logConsole('Ploriv Web ready · Velox Search');
+            } catch (e) {
+                console.error('Boot error', e);
+                const vp = document.getElementById('viewport-container');
+                if (vp) {
+                    vp.innerHTML = '<div style="padding:2rem;text-align:center;color:#fef3e8;"><h1 style="color:#fdba74;">Ploriv Web</h1><p style="color:#c4a484;">Could not start UI. Please refresh.</p></div>';
+                }
+            }
+        }
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', bootPloriv);
+        } else {
+            bootPloriv();
+        }
+        window.addEventListener('load', function() {
+            if (!tabs || tabs.length === 0) bootPloriv();
+        });
+    </script>
+</body>
+</html>
